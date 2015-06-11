@@ -91,7 +91,7 @@
 		else { return -1; }
 	}
 
-	function metric2Table(jsonData,xname,Report,fsort) {
+	function metric2Table(jsonData,xname,Report,fsort,limit) {
 		var Table = new google.visualization.DataTable();
 		Table.addColumn('string', xname);
 		for ( var j in Report ) {
@@ -119,7 +119,11 @@
 		if ( fsort ) {
 			rows.sort(fsort)
 		}
-		Table.addRows(rows);
+		if ( limit ) {
+			Table.addRows(rows.slice(0,limit));
+		} else {
+			Table.addRows(rows);
+		}
 		return Table;
 	}
 
@@ -154,12 +158,14 @@
 							[ gv.ColumnChart, 'commit_size_div', [ 'size' ],
 								{ 'height':350,
 								},
-								order_abs
+								order_abs,
+								8
 							],
 							[ gv.ColumnChart, 'author_lines', [ 'lines_a', 'lines_r' ],
 								{ 'height':350,
 								},
-								order_2val
+								order_2val,
+								8
 							]
 						]
 					]
@@ -198,7 +204,8 @@
 									Data,
 									tab[actTID][i][Ixaxis],
 									tab[actTID][i][Igrid][j][2],
-									tab[actTID][i][Igrid][j][4]
+									tab[actTID][i][Igrid][j][4],
+									tab[actTID][i][Igrid][j][5]
 								);
 					GS[actTID][g_idx++].draw(Table, tab[actTID][i][Igrid][j][3]);
 				}
