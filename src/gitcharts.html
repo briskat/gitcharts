@@ -74,7 +74,24 @@
 			+ metrics['files'][0] + '</b><small> files</small>');
 	}
 
-	function metric2Table(jsonData,xname,Report) {
+	function order(a, b) {
+		if (b[1] == a[1]) { return 0; }
+		if (b[1] > a[1]) { return 1; }
+		else { return -1; }
+	}
+	function order_abs(a, b) {
+		if (Math.abs(b[1]) == Math.abs(a[1])) { return 0; }
+		if (Math.abs(b[1]) > Math.abs(a[1])) { return 1; }
+		else { return -1; }
+	}
+	function order_2val(a, b) {
+		if (b[1] == a[1] && b[2] == a[2] ) { return 0; }
+		if (b[1] >= b[2] && b[1] > a[1] && b[1] > a[2] ) { return 1; }
+		if (b[2] > b[1] && b[2] > a[1] && b[2] > a[2] ) { return 1; }
+		else { return -1; }
+	}
+
+	function metric2Table(jsonData,xname,Report,fsort) {
 		var Table = new google.visualization.DataTable();
 		Table.addColumn('string', xname);
 		for ( var j in Report ) {
@@ -86,6 +103,7 @@
 		}
 
 		var metrics=jsonData['report']['metrics'];
+		var rows = new Array();
 		for ( var x_idx in jsonData['report']['x'] ) {
 			var row=[];
 			row.push(jsonData['report']['x'][x_idx]);
@@ -96,8 +114,12 @@
 					row.push('');
 				}
 			}
-			Table.addRow(row);
+			rows.push(row);
 		}
+		if ( fsort ) {
+			rows.sort(fsort)
+		}
+		Table.addRows(rows);
 		return Table;
 	}
 
@@ -126,15 +148,18 @@
 						[
 							[ gv.PieChart, 'commit_chart_div', [ 'commits' ],
 								{ 'height':350,
-								}
+								},
+								order
 							],
 							[ gv.ColumnChart, 'commit_size_div', [ 'size' ],
 								{ 'height':350,
-								}
+								},
+								order_abs
 							],
 							[ gv.ColumnChart, 'author_lines', [ 'lines_a', 'lines_r' ],
 								{ 'height':350,
-								}
+								},
+								order_2val
 							]
 						]
 					]
@@ -172,7 +197,8 @@
 					var Table = metric2Table(
 									Data,
 									tab[actTID][i][Ixaxis],
-									tab[actTID][i][Igrid][j][2]
+									tab[actTID][i][Igrid][j][2],
+									tab[actTID][i][Igrid][j][4]
 								);
 					GS[actTID][g_idx++].draw(Table, tab[actTID][i][Igrid][j][3]);
 				}
