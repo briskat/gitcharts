@@ -295,25 +295,17 @@
 				<select id="project_div" class="btn-success btn-lg dropdown-toggle btn-block"></select>
 			</div>
 			<div class="btn-group" role="group">
-				<a class="btn btn-info btn-lg" href="http://www.briskat.com/blog/Google-Graphs" role="button">
-				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+				<span id="github_url"></span>
 			</div>
 		</div>
-		<div class="col-lg-8">
-			<h3>
-			<span id="summary"></span>&nbsp;<span id="github_url"></span>
-			</h3>
+		<div class="col-lg-6" style="padding-top: 10px;">
+			<h4><span id="summary"></span></h4>
 		</div>
-	</div>
-
-	<div class="row text-center">
 		<div class="col-lg-3">
-			<h3><button id="day_minus" class="btn btn-default btn-lg">&nbsp; -10 &nbsp;</button> <button id="day_plus" class="btn btn-default btn-lg">&nbsp; +10 &nbsp;</button>
+			<h4>
+			<button id="day_minus" class="btn btn-success btn-lg">&nbsp;<b> - </b>&nbsp;</button> <button id="day_plus" class="btn btn-success btn-lg">&nbsp;<b> + </b>&nbsp;</button>
 			<small>Last</small> <big><b><span id="last_days"></span></b></big> <small>days</small>
-			</h3>
-		</div>
-		<div class="col-lg-8">
-			<h3><span id="last_days_sum"></span></h3>
+			</h4>
 		</div>
 	</div>
 
@@ -328,6 +320,14 @@
 	</div>
 
     <div class="tab-content">
+
+	<div class="row text-center">
+		<div class="col-lg-3">
+		</div>
+		<div class="col-lg-6">
+			<h4><span id="last_days_sum"></span></h4>
+		</div>
+	</div>
         <div id="tab0" class="tab-pane">
 			<div class="row">
 				<div class="col-lg-6">
