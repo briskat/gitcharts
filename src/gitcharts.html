@@ -18,7 +18,7 @@
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script type="text/javascript">
-	google.load('visualization', '1.0', {'packages':['corechart']});
+	google.load('visualization', '1.0', {'packages':['corechart','scatter']});
 	google.setOnLoadCallback(initMe);
 
 	var days = 10;
@@ -28,7 +28,10 @@
 		loadProjects();
 		drawSummary();
 		$(window).resize(function(){ refresh(days,0); });
+		$("#day_minus").click(function() { days=refresh(days,-10) });
+		$("#day_plus").click(function() { days=refresh(days,10) });
 		$("#project_div").change(function() { refresh(days,0); drawSummary(); });
+		refresh(days,0);
 	}
 
 	function dump(obj) {
@@ -60,6 +63,88 @@
 			+ metrics['files'][0] + '</b><small> files</small>');
 	}
 
+	function metric2Table(jsonData,xname,Report) {
+		var Table = new google.visualization.DataTable();
+		Table.addColumn('string', xname);
+		for ( var j in Report ) {
+			if ( Report[j] ) {
+				Table.addColumn('number', Report[j]);
+			} else {
+				Table.addColumn('string', Report[j]);
+			}
+		}
+
+		var metrics=jsonData['report']['metrics'];
+		for ( var x_idx in jsonData['report']['x'] ) {
+			var row=[];
+			row.push(jsonData['report']['x'][x_idx]);
+			for ( var j in Report ) {
+				if ( Report[j] ) {
+					row.push(metrics[Report[j]][x_idx]);
+				} else {
+					row.push('');
+				}
+			}
+			Table.addRow(row);
+		}
+		return Table;
+	}
+
+	function drawDashboard(Project,days) {
+			gv = google.visualization;
+			var url = 0;
+			var xaxis = 1;
+			var grid = 2;
+			var tab = [
+				[
+					"/api/p/" + Project + "/r/last_x_days?days=" + days,
+					'date',
+					[
+						[ gv.ColumnChart, 'commits_div', [ 'commits' ], { 'height':250 } ],
+						[ gv.ColumnChart, 'size_div',    [ 'size' ], { 'height':250 } ],
+						[ gv.LineChart,   'files_div',   [ 'files_c', 'files_r', 'files_a' ], { 'height':250 } ],
+						[ gv.LineChart,   'lines_div',   [ 'lines_a', 'lines_r' ], { 'height':250 } ],
+					]
+				],
+				[
+					"/api/p/" + Project + "/r/last_x_days_a?days=" + days,
+					'author',
+					[
+						[ gv.BubbleChart, 'bubble_div', [ 'lines_a', 'lines_r', '', 'commits' ],
+							{
+								hAxis: {title: 'Lines Added'},
+								vAxis: {title: 'Lines Deleted'},
+								explorer: { maxZoomOut: 20 }
+							}
+						],
+						[ gv.PieChart, 'commit_chart_div', [ 'commits' ], {}
+						],
+						[ google.charts.Scatter, 'commit_size_div', [ 'size' ],
+							{ 'height':200, }
+						]
+					]
+				]
+			];
+
+			if ( GS.length == 0 ) {
+				for ( var i in tab )
+					for ( var j in tab[i][grid] )
+						GS.push(new tab[i][grid][j][0](document.getElementById(tab[i][grid][j][1])));
+			}
+
+			var g_idx=0;
+			for ( var i in tab )
+				for ( var j in tab[i][grid] ) {
+					var Table = metric2Table(
+									getData(tab[i][url]),
+									tab[i][xaxis],
+									tab[i][grid][j][2]
+								);
+					GS[g_idx++].draw(Table, tab[i][grid][j][3]);
+				}
+
+	}
+
 	function getActiveProject () {
 		var e = document.getElementById("project_div");
 		return e.options[e.selectedIndex].value;
@@ -71,7 +156,11 @@
 	}
 
 	function refresh(days,delta) {
+		if ( days+delta < 1 || days+delta > 366 )
+			return days;
 		var Project = getActiveProject();
+		days=days+delta;
+		drawDashboard(Project, days);
 		$( "span#last_days" ).text( days );
 		$( "span#github_url" ).html( '<a class="btn btn-default" href="https://' + getProjectGurl(Project)
 			+ '">GitHub</a>' );
@@ -99,7 +188,7 @@
 	</div>
 
 	<div class="row text-center">
-		<h3><button id="dayminus" class="btn btn-default btn-lg">&nbsp; -10 &nbsp;</button> <button id="dayplus" class="btn btn-default btn-lg">&nbsp; +10 &nbsp;</button>
+		<h3><button id="day_minus" class="btn btn-default btn-lg">&nbsp; -10 &nbsp;</button> <button id="day_plus" class="btn btn-default btn-lg">&nbsp; +10 &nbsp;</button>
 		<small>Last</small> <big><b><span id="last_days"></span></b></big> <small>days</small>
 		</h3>
 	</div>
