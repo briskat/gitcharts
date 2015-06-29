@@ -1,0 +1,179 @@
+<!DOCTYPE html><!-- (c) 2015 Briskat, http://www.briskat.com, License: MIT -->
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Git dashboard">
+    <meta name="author" content="Briskat">
+
+    <title>Briskat - gitcharts</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script type="text/javascript">
+	google.load('visualization', '1.0', {'packages':['corechart']});
+	google.setOnLoadCallback(initMe);
+
+	var days = 10;
+	var GS = new Array(); // reuse graph
+
+	function initMe() {
+		loadProjects();
+		drawSummary();
+		$(window).resize(function(){ refresh(days,0); });
+		$("#project_div").change(function() { refresh(days,0); drawSummary(); });
+	}
+
+	function dump(obj) {
+		prompt('Dump', JSON.stringify(obj));
+	}
+
+	function loadProjects() {
+		var jsonData = getData("/api/p/");
+		var options = $("#project_div");
+		$.each(jsonData['projects'], function() {
+				options.append($("<option />").val(this.name).text(this.name));
+		});
+	}
+
+	function getData(url) {
+		return $.ajax({
+			url: url,
+			dataType: "json",
+			async: false
+		}).responseJSON;
+	}
+
+	function drawSummary() {
+		var jsonData = getData("/api/p/" + $('#project_div').val() + "/r/summary");
+		var metrics=jsonData['report']['metrics'];
+		$( "span#summary" ).html( ' <b>' + metrics['commits'][0] + '</b><small> commits,</small> <b>'
+			+ metrics['authors'][0] + '</b><small> authors, </small> <b>~'
+			+ Math.round(metrics['size'][0]/1048576) + '</b><small>MB, </small><b>~'
+			+ metrics['files'][0] + '</b><small> files</small>');
+	}
+
+	function getActiveProject () {
+		var e = document.getElementById("project_div");
+		return e.options[e.selectedIndex].value;
+	}
+
+	function getProjectGurl(Proj) {
+		var url=Proj.split(' (');
+		return 'github.com/' + url[1].substring(0, url[1].length - 1) + '/' + url[0];
+	}
+
+	function refresh(days,delta) {
+		var Project = getActiveProject();
+		$( "span#last_days" ).text( days );
+		$( "span#github_url" ).html( '<a class="btn btn-default" href="https://' + getProjectGurl(Project)
+			+ '">GitHub</a>' );
+		return days;
+	}
+</script>
+</head>
+
+<body style="padding: 10px;">
+	<div class="row text-center">
+		<div class="col-lg-3">
+			<div class="btn-group" role="group">
+				<select id="project_div" class="btn-success btn-lg dropdown-toggle btn-block"></select>
+			</div>
+			<div class="btn-group" role="group">
+				<a class="btn btn-info btn-lg" href="http://www.briskat.com/blog/Google-Graphs" role="button">
+				<span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
+			</div>
+		</div>
+		<div class="col-lg-8">
+			<h3>
+			<span id="summary"></span>&nbsp;<span id="github_url"></span>
+			</h3>
+		</div>
+	</div>
+
+	<div class="row text-center">
+		<h3><button id="dayminus" class="btn btn-default btn-lg">&nbsp; -10 &nbsp;</button> <button id="dayplus" class="btn btn-default btn-lg">&nbsp; +10 &nbsp;</button>
+		<small>Last</small> <big><b><span id="last_days"></span></b></big> <small>days</small>
+		</h3>
+	</div>
+	<p></p>
+
+	<div class="row">
+		<div class="col-lg-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">Commits by authors
+				</div>
+				<div class="panel-body"><div id="commit_chart_div"></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">Size changed by authors
+				</div>
+				<div class="panel-body"><div id="commit_size_div"></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-5">
+			<div class="panel panel-default">
+				<div class="panel-heading">Commits and lines by authors
+				</div>
+				<div class="panel-body"><div id="bubble_div"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">Commits added by day
+				</div>
+				<div class="panel-body"><div id="commits_div"></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">Size changed by day
+				</div>
+				<div class="panel-body"><div id="size_div"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-lg-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">Files changed, added and removed by day
+				</div>
+				<div class="panel-body"><div id="files_div"></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-6">
+			<div class="panel panel-default">
+				<div class="panel-heading">Lines added and removed by day
+				</div>
+				<div class="panel-body"><div id="lines_div"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    <!-- <script src="bootstrap.min.js"></script> -->
+</body>
+</html>
