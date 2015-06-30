@@ -22,27 +22,30 @@
 	google.load('visualization', '1.0', {'packages':['corechart']});
 	google.setOnLoadCallback(initMe);
 
-	var days = 10;
-	var actTID = 0;
 	var GS = new Array(); // reuse graph
+	var S = { tab : 0,
+			days : 10,
+		};
 
 	function initMe() {
 		loadProjects();
 		drawSummary();
-		$(window).resize(function(){ refresh(days,0); });
-		$("#day_minus").click(function() { days=refresh(days,-10) });
-		$("#day_plus").click(function() { days=refresh(days,10) });
-		$("#project_div").change(function() { refresh(days,0); drawSummary(); });
+
+		$("#dashtabs li:eq("+S['tab']+") a").tab('show');
+		$(window).resize(function(){ refresh(S['days'],0); });
+		$("#day_minus").click(function() { S['days']=refresh(S['days'],-10); });
+		$("#day_plus").click(function() { S['days']=refresh(S['days'],10); });
+		$("#project_div").change(function() { refresh(S['days'],0); drawSummary(); });
 
 		$(document).ready(function(){
 			$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
 				var act = $(e.target).attr('href'); // Get the name of active tab
-				actTID = act.substring(4, act.length);
+				S['tab'] = act.substring(4, act.length);
 				GS = new Array();
-				refresh(days,0);
+				refresh(S['days'],0);
 			});
 		});
-		refresh(days,0);
+		refresh(S['days'],0);
 	}
 
 	function dump(obj) {
@@ -142,6 +145,7 @@
 
 	function drawDashboard(Project,days) {
 			gv = google.visualization;
+			var actTID = S['tab'];
 			var Iurl = 0;
 			var Ixaxis = 1;
 			var Igrid = 2;
