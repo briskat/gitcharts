@@ -28,6 +28,10 @@
 		};
 
 	function initMe() {
+		var tab=parseInt(getUrlParameter('tab'));
+		if (tab > 0 && tab < 4) { S['tab']=tab; }
+		var days=parseInt(getUrlParameter('days'));
+		if (days > 0 && days < 366) { S['days']=days; }
 		loadProjects();
 		drawSummary();
 
@@ -52,11 +56,28 @@
 		prompt('Dump', JSON.stringify(obj));
 	}
 
+	function getUrlParameter(sParam,Url) {
+		var sPageURL = window.location.search.substring(1);
+		if ( Url ) { sPageURL = Url; }
+		var sURLVariables = sPageURL.split('&');
+		for (var i = 0; i < sURLVariables.length; i++) {
+			var sParameterName = sURLVariables[i].split('=');
+			if (sParameterName[0] == sParam) {
+				return  decodeURIComponent(sParameterName[1]);
+			}
+		}
+	}
+
 	function loadProjects() {
 		var jsonData = getData("/api/p/");
 		var options = $("#project_div");
+		var proj=getUrlParameter('proj');
 		$.each(jsonData['projects'], function() {
+			if ( this.name == proj ) {
+				options.append($("<option selected/>").val(this.name).text(this.name));
+			} else {
 				options.append($("<option />").val(this.name).text(this.name));
+			}
 		});
 	}
 
