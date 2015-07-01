@@ -18,6 +18,7 @@
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/assets/jquery.history.js"></script>
 	<script type="text/javascript">
 	google.load('visualization', '1.0', {'packages':['corechart']});
 	google.setOnLoadCallback(initMe);
@@ -37,9 +38,9 @@
 
 		$("#dashtabs li:eq("+S['tab']+") a").tab('show');
 		$(window).resize(function(){ refresh(S['days'],0); });
-		$("#day_minus").click(function() { S['days']=refresh(S['days'],-10); });
-		$("#day_plus").click(function() { S['days']=refresh(S['days'],10); });
-		$("#project_div").change(function() { refresh(S['days'],0); drawSummary(); });
+		$("#day_minus").click(function() { S['days']=refresh(S['days'],-10); addHistory(); });
+		$("#day_plus").click(function() { S['days']=refresh(S['days'],10); addHistory(); });
+		$("#project_div").change(function() { refresh(S['days'],0); drawSummary(); addHistory(); });
 
 		$(document).ready(function(){
 			$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
@@ -47,9 +48,30 @@
 				S['tab'] = act.substring(4, act.length);
 				GS = new Array();
 				refresh(S['days'],0);
+				addHistory();
 			});
 		});
+		$(function() {
+			if ( History.enabled ) {
+				History.Adapter.bind(window,'statechange',function() {
+					var s = History.getState();
+					var url = s.url.split('?')[1];
+					if ( S['days'] != getUrlParameter( 'days', url )
+						|| S['tab'] != getUrlParameter( 'tab', url )
+						|| getActiveProject() != getUrlParameter( 'proj', url ) ) {
+						location.reload();
+					}
+				});
+			}
+		});
 		refresh(S['days'],0);
+	}
+
+	function addHistory () {
+		if ( History.enabled ) {
+			History.pushState(null, null, "?proj=" + encodeURIComponent(getActiveProject())
+				+ "&days=" + S['days'] + "&tab=" + S['tab']);
+		}
 	}
 
 	function dump(obj) {
