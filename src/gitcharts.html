@@ -314,6 +314,38 @@
 
 	}
 
+	function githubSucc( response ) {
+		var meta = response.meta;
+		var data = response.data;
+		var Msg = "No detail available.";
+		if ( meta["X-RateLimit-Remaining"] == 0 ) {
+			var d = new Date(0);
+			d.setUTCSeconds(meta["X-RateLimit-Reset"]);
+			Msg = 'No commit detail available from GitHub until ' + d.toString();
+		} else {
+			Msg = data['message'].replace(/\n\n/, "</h3><br /></br>");
+			Msg = Msg.replace(/\n/g, "<br />");
+			Msg = '<h4> '+ data['author']['name'] + ', <small>' + data['author']['date'] + '</small></h4><h3> ' + Msg;
+			//</h3>
+		}
+		$( "div#com_detail" ).html( Msg );
+	}
+
+	function getInfo(proj,value) {
+		var url=proj.split(' (');
+		var gurl = "https://api.github.com/repos/" + url[1].substring(0, url[1].length - 1)
+			+ '/' + url[0] + "/git/commits/" + value;
+		$.ajax({
+			url: gurl,
+			jsonp: "callback",
+			dataType: "jsonp",
+			success: githubSucc,
+			error: function( e ) {
+				$( "div#com_detail" ).html( 'Error to get commit detail' );
+			}
+		});
+	}
+
 	function addListener(c,t) {
 		var chart=c;
 		var Table=t;
@@ -322,8 +354,14 @@
 			var selectedItem = chart.getSelection()[0];
 			if (selectedItem) {
 				var value = Table.getValue(selectedItem.row, 0);
-				window.location.href = 'https://' + getProjectGurl(getActiveProject())
-					+'/commit/' + value;
+				var proj = getActiveProject();
+				var url = 'https://' + getProjectGurl(proj) + '/commit/' + value;
+				getInfo(proj,value);
+				//githubSucc(1);
+				$( "span#com_sha1" ).text( value.substring(0, 12) );
+				$( "span#com_url" ).html( '<a class="btn btn-success" href="' + url
+					+ '"> View detail on GitHub</a>' );
+				$('#com_dialog').modal("show");
 			}
 		}
 		google.visualization.events.addListener(chart, 'select', selectHandler);
@@ -462,6 +500,22 @@
 						<div class="panel-body"><div id="big_commit_div"></div>
 						</div>
 					</div>
+				</div>
+				<div id="com_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+				  <div class="modal-dialog modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							Commit <h3><span id="com_sha1"></span></h3>
+						</div>
+						<div class="modal-body">
+							<div id="com_detail" class="text-left"></div>
+						</div>
+						<div class="modal-footer">
+							<span id="com_url"></span>
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						</div>
+					</div>
+				  </div>
 				</div>
 			</div>
         </div>
