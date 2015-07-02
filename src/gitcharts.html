@@ -146,6 +146,7 @@
 			var Ixaxis = 1;
 			var Igrid = 2;
 			var Isub = 3;
+			var Ilistener = 4;
 			var tab = [
 				[
 					[
@@ -178,6 +179,7 @@
 							]
 						],
 						function (T) { return '' },
+						'listener'
 					]
 				],
 				[
@@ -255,10 +257,29 @@
 									tab[actTID][i][Igrid][j][4],
 									tab[actTID][i][Igrid][j][5]
 								);
-					GS[actTID][g_idx++].draw(Table, tab[actTID][i][Igrid][j][3]);
+					var chart=GS[actTID][g_idx++];
+					if ( tab[actTID][i][Ilistener] ) {
+						addListener(chart,Table);
+					}
+					chart.draw(Table, tab[actTID][i][Igrid][j][3]);
 				}
 			}
 
+	}
+
+	function addListener(c,t) {
+		var chart=c;
+		var Table=t;
+		google.visualization.events.removeAllListeners(c);
+		function selectHandler() {
+			var selectedItem = chart.getSelection()[0];
+			if (selectedItem) {
+				var value = Table.getValue(selectedItem.row, 0);
+				window.location.href = 'https://' + getProjectGurl(getActiveProject())
+					+'/commit/' + value;
+			}
+		}
+		google.visualization.events.addListener(chart, 'select', selectHandler);
 	}
 
 	function getActiveProject () {
