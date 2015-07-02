@@ -166,6 +166,22 @@
 				],
 				[
 					[
+						"/r/last_x_days_c?days=" + days,
+						'author',
+						[
+							[ gv.ColumnChart, 'big_commit_div', [ 'size' ],
+								{ 'height':650,
+									title : 'Click on column for the detail.'
+								},
+								order_abs,
+								12
+							]
+						],
+						function (T) { return '' },
+					]
+				],
+				[
+					[
 						"/r/last_x_days_a?days=" + days,
 						'author',
 						[
@@ -313,6 +329,7 @@
 		<div class="col-lg-12">
 			<ul class="nav nav-tabs" id="dashtabs">
 				<li><a data-toggle="tab" href="#tab0">Changes</a></li>
+				<li><a data-toggle="tab" href="#tab1">Commits</a></li>
 				<li><a data-toggle="tab" href="#tab2"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
 				<li><a data-toggle="tab" href="#tab3"><span class="glyphicon glyphicon-th" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
 			</ul>
@@ -369,6 +386,19 @@
         </div>
 
         <div id="tab1" class="tab-pane">
+			<div class="row text-center">
+				<div class="col-lg-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">Biggest commits by changed size
+						</div>
+						<div class="panel-body"><div id="big_commit_div"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+        </div>
+
+        <div id="tab2" class="tab-pane">
 			<div class="row">
 				<div class="col-lg-5">
 					<div class="panel panel-default">
@@ -399,7 +429,7 @@
 			</div>
         </div>
 
-        <div id="tab2" class="tab-pane">
+        <div id="tab3" class="tab-pane">
 			<div class="row">
 				<div class="col-lg-12">
 					<div class="panel panel-default">
