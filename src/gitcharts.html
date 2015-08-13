@@ -17,11 +17,13 @@
     <![endif]-->
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 	<script type="text/javascript">
-	google.load('visualization', '1.0', {'packages':['corechart','scatter']});
+	google.load('visualization', '1.0', {'packages':['corechart']});
 	google.setOnLoadCallback(initMe);
 
 	var days = 10;
+	var actTID = 0;
 	var GS = new Array(); // reuse graph
 
 	function initMe() {
@@ -31,6 +33,15 @@
 		$("#day_minus").click(function() { days=refresh(days,-10) });
 		$("#day_plus").click(function() { days=refresh(days,10) });
 		$("#project_div").change(function() { refresh(days,0); drawSummary(); });
+
+		$(document).ready(function(){
+			$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
+				var act = $(e.target).attr('href'); // Get the name of active tab
+				actTID = act.substring(4, act.length);
+				GS = new Array();
+				refresh(days,0);
+			});
+		});
 		refresh(days,0);
 	}
 
@@ -92,56 +103,80 @@
 
 	function drawDashboard(Project,days) {
 			gv = google.visualization;
-			var url = 0;
-			var xaxis = 1;
-			var grid = 2;
+			var Iurl = 0;
+			var Ixaxis = 1;
+			var Igrid = 2;
 			var tab = [
 				[
-					"/api/p/" + Project + "/r/last_x_days?days=" + days,
-					'date',
 					[
-						[ gv.ColumnChart, 'commits_div', [ 'commits' ], { 'height':250 } ],
-						[ gv.ColumnChart, 'size_div',    [ 'size' ], { 'height':250 } ],
-						[ gv.LineChart,   'files_div',   [ 'files_c', 'files_r', 'files_a' ], { 'height':250 } ],
-						[ gv.LineChart,   'lines_div',   [ 'lines_a', 'lines_r' ], { 'height':250 } ],
+						"/r/last_x_days?days=" + days,
+						'date',
+						[
+							[ gv.ColumnChart, 'commits_div', [ 'commits' ], { 'height':350 } ],
+							[ gv.ColumnChart, 'size_div',    [ 'size' ], { 'height':350 } ],
+							[ gv.LineChart,   'files_div',   [ 'files_c', 'files_r', 'files_a' ], { 'height':350 } ],
+							[ gv.LineChart,   'lines_div',   [ 'lines_a', 'lines_r' ], { 'height':350 } ],
+						]
 					]
 				],
 				[
-					"/api/p/" + Project + "/r/last_x_days_a?days=" + days,
-					'author',
 					[
-						[ gv.BubbleChart, 'bubble_div', [ 'lines_a', 'lines_r', '', 'commits' ],
-							{
-								hAxis: {title: 'Lines Added'},
-								vAxis: {title: 'Lines Deleted'},
-								explorer: { maxZoomOut: 20 }
-							}
-						],
-						[ gv.PieChart, 'commit_chart_div', [ 'commits' ], {}
-						],
-						[ google.charts.Scatter, 'commit_size_div', [ 'size' ],
-							{ 'height':200, }
+						"/r/last_x_days_a?days=" + days,
+						'author',
+						[
+							[ gv.PieChart, 'commit_chart_div', [ 'commits' ],
+								{ 'height':350,
+								}
+							],
+							[ gv.ColumnChart, 'commit_size_div', [ 'size' ],
+								{ 'height':350,
+								}
+							],
+							[ gv.ColumnChart, 'author_lines', [ 'lines_a', 'lines_r' ],
+								{ 'height':350,
+								}
+							]
+						]
+					]
+				],
+				[
+					[
+						"/r/last_x_days_a?days=" + days,
+						'author',
+						[
+							[ gv.BubbleChart, 'bubble_div', [ 'lines_a', 'lines_r', 'size', 'commits' ],
+								{
+									hAxis: {title: 'Lines Added'},
+									vAxis: {title: 'Lines Removed'},
+									explorer: { maxZoomOut: 20 },
+									'height':650,
+								}
+							]
 						]
 					]
 				]
 			];
 
-			if ( GS.length == 0 ) {
-				for ( var i in tab )
-					for ( var j in tab[i][grid] )
-						GS.push(new tab[i][grid][j][0](document.getElementById(tab[i][grid][j][1])));
+			if ( GS[actTID] == undefined ) {
+				var GST = new Array(); // reuse graph
+				for ( var i in tab[actTID] )
+					for ( var j in tab[actTID][i][Igrid] )
+						GST.push(new tab[actTID][i][Igrid][j][0](document.getElementById(tab[actTID][i][Igrid][j][1])));
+				GS[actTID] = GST;
 			}
 
 			var g_idx=0;
-			for ( var i in tab )
-				for ( var j in tab[i][grid] ) {
+			for ( var i in tab[actTID] ) {
+				var Data = getData("/api/p/" + Project + tab[actTID][i][Iurl]);
+				for ( var j in tab[actTID][i][Igrid] ) {
 					var Table = metric2Table(
-									getData(tab[i][url]),
-									tab[i][xaxis],
-									tab[i][grid][j][2]
+									Data,
+									tab[actTID][i][Ixaxis],
+									tab[actTID][i][Igrid][j][2]
 								);
-					GS[g_idx++].draw(Table, tab[i][grid][j][3]);
+					GS[actTID][g_idx++].draw(Table, tab[actTID][i][Igrid][j][3]);
 				}
+			}
 
 	}
 
@@ -167,6 +202,25 @@
 		return days;
 	}
 </script>
+<style>
+/* tab color */
+.nav-tabs>li>a {
+	color: #000;
+	border: 1px solid #ccc;
+}
+
+/* active tab color */
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+	color: #fff;
+	background-color: #666;
+}
+
+/* hover tab color */
+.nav-tabs>li>a:hover {
+	color: #222;
+	border-color: #ccc;
+}
+</style>
 </head>
 
 <body style="padding: 10px;">
@@ -188,81 +242,104 @@
 	</div>
 
 	<div class="row text-center">
-		<h3><button id="day_minus" class="btn btn-default btn-lg">&nbsp; -10 &nbsp;</button> <button id="day_plus" class="btn btn-default btn-lg">&nbsp; +10 &nbsp;</button>
-		<small>Last</small> <big><b><span id="last_days"></span></b></big> <small>days</small>
-		</h3>
-	</div>
-	<p></p>
-
-	<div class="row">
 		<div class="col-lg-3">
-			<div class="panel panel-default">
-				<div class="panel-heading">Commits by authors
+			<h3><button id="day_minus" class="btn btn-default btn-lg">&nbsp; -10 &nbsp;</button> <button id="day_plus" class="btn btn-default btn-lg">&nbsp; +10 &nbsp;</button>
+			<small>Last</small> <big><b><span id="last_days"></span></b></big> <small>days</small>
+			</h3>
+		</div>
+		<div class="col-lg-9">
+			<ul class="nav nav-tabs" id="dashtabs">
+				<li><a data-toggle="tab" href="#tab0">Changes</a></li>
+				<li><a data-toggle="tab" href="#tab2"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
+				<li><a data-toggle="tab" href="#tab3"><span class="glyphicon glyphicon-th" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
+			</ul>
+		</div>
+	</div>
+
+    <div class="tab-content">
+        <div id="tab0" class="tab-pane">
+			<div class="row">
+				<div class="col-lg-6">
+					<div class="panel panel-default">
+						<div class="panel-heading">Commits added by day
+						</div>
+						<div class="panel-body"><div id="commits_div"></div>
+						</div>
+					</div>
 				</div>
-				<div class="panel-body"><div id="commit_chart_div"></div>
+
+				<div class="col-lg-6">
+					<div class="panel panel-default">
+						<div class="panel-heading">Size changed by day
+						</div>
+						<div class="panel-body"><div id="size_div"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-lg-6">
+					<div class="panel panel-default">
+						<div class="panel-heading">Files changed, added and removed by day
+						</div>
+						<div class="panel-body"><div id="files_div"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-lg-6">
+					<div class="panel panel-default">
+						<div class="panel-heading">Lines added and removed by day
+						</div>
+						<div class="panel-body"><div id="lines_div"></div>
+						</div>
+					</div>
 				</div>
 			</div>
-		</div>
+        </div>
 
-		<div class="col-lg-4">
-			<div class="panel panel-default">
-				<div class="panel-heading">Size changed by authors
+        <div id="tab1" class="tab-pane">
+			<div class="row">
+				<div class="col-lg-5">
+					<div class="panel panel-default">
+						<div class="panel-heading">Commits by author
+						</div>
+						<div class="panel-body"><div id="commit_chart_div"></div>
+						</div>
+					</div>
 				</div>
-				<div class="panel-body"><div id="commit_size_div"></div>
+
+				<div class="col-lg-7">
+					<div class="panel panel-default">
+						<div class="panel-heading">Top commiters by size
+						</div>
+						<div class="panel-body"><div id="commit_size_div"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-lg-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">Top commiters by lines added, removed
+						</div>
+						<div class="panel-body"><div id="author_lines"></div>
+						</div>
+					</div>
 				</div>
 			</div>
-		</div>
+        </div>
 
-		<div class="col-lg-5">
-			<div class="panel panel-default">
-				<div class="panel-heading">Commits and lines by authors
-				</div>
-				<div class="panel-body"><div id="bubble_div"></div>
+        <div id="tab2" class="tab-pane">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">Commits, size and lines by authors
+						</div>
+						<div class="panel-body"><div id="bubble_div"></div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-
-	<div class="row">
-		<div class="col-lg-6">
-			<div class="panel panel-default">
-				<div class="panel-heading">Commits added by day
-				</div>
-				<div class="panel-body"><div id="commits_div"></div>
-				</div>
-			</div>
-		</div>
-
-		<div class="col-lg-6">
-			<div class="panel panel-default">
-				<div class="panel-heading">Size changed by day
-				</div>
-				<div class="panel-body"><div id="size_div"></div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="row">
-		<div class="col-lg-6">
-			<div class="panel panel-default">
-				<div class="panel-heading">Files changed, added and removed by day
-				</div>
-				<div class="panel-body"><div id="files_div"></div>
-				</div>
-			</div>
-		</div>
-
-		<div class="col-lg-6">
-			<div class="panel panel-default">
-				<div class="panel-heading">Lines added and removed by day
-				</div>
-				<div class="panel-body"><div id="lines_div"></div>
-				</div>
-			</div>
-		</div>
-	</div>
-
-    <!-- <script src="bootstrap.min.js"></script> -->
 </body>
 </html>
