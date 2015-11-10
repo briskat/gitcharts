@@ -42,13 +42,12 @@
 		var days=parseInt(getUrlParameter('days'));
 		if (days > 0 && days < 366) { S['days']=days; }
 		loadProjects();
-		drawSummary();
 
 		$("#dashtabs li:eq("+(S['tab']-1)+") a").tab('show');
 		$(window).resize(function(){ refresh(S['days'],0); });
 		$("#day_minus").click(function() { S['days']=refresh(S['days'],-10); });
 		$("#day_plus").click(function() { S['days']=refresh(S['days'],10); });
-		$("#project_div").change(function() { refresh(S['days'],0); drawSummary(); });
+		$("#project_div").change(function() { refresh(S['days'],0); });
 		$("#link_btn").click(function() { prompt('Paste current URL', getCurUrl()) });
 
 		$(document).ready(function(){
@@ -108,28 +107,6 @@
 			dataType: "json",
 			async: false
 		}).responseJSON;
-	}
-
-	function drawSummary() {
-		var jsonData = getData("/api/p/" + $('#project_div').val() + "/r/summary");
-		var metrics=jsonData['report']['metrics'];
-		$( "span#summary" ).html( ' <b>' + metrics['commits'][0] + '</b><small> commits,</small> <b>'
-			+ metrics['authors'][0] + '</b><small> authors, </small> <b>~'
-			+ Math.round(metrics['size'][0]/1048576) + '</b><small>MB, </small><b>~'
-			+ metrics['files'][0] + '</b><small> files</small>');
-	}
-
-	function drawDaySummary(f,jsonData) {
-		var Tot = new Object();
-		Tot['_cnt'] = jsonData['x'].length;
-		for ( var key in jsonData['metrics'] ) {
-			var cnt = 0;
-			for ( var i in jsonData['metrics'][key] ) {
-				cnt = cnt + jsonData['metrics'][key][i];
-			}
-			Tot[key] = cnt;
-		};
-		$( "span#last_days_sum" ).html(f(Tot));
 	}
 
 	function order(a, b) {
@@ -203,12 +180,7 @@
 							[ gv.ColumnChart, 'size_div',    [ 'size' ], { 'height':350 } ],
 							[ gv.LineChart,   'files_div',   [ 'files_c', 'files_r', 'files_a' ], { 'height':350 } ],
 							[ gv.LineChart,   'lines_div',   [ 'lines_a', 'lines_r' ], { 'height':350 } ],
-						],
-						function (T) { return '<b>' + T['commits'] + '</b><small> commits, </small>'
-								+ 	'<b>' + Math.round(T['size']/1024) + '</b><small>kB, </small>'
-								+ 	'<b class="text-success">+' + T['files_a'] + '</b><small>, </small>'
-								+ 	'<b class="text-danger">-' + T['files_r'] + '</b><small> files</small>'
-						}
+						]
 					]
 				],
 				[
@@ -224,7 +196,6 @@
 								12
 							]
 						],
-						function (T) { return '' },
 						'listener'
 					]
 				],
@@ -250,13 +221,7 @@
 								order_2val,
 								8
 							]
-						],
-						function (T) { return '<b>' + T['commits'] + '</b><small> commits, </small>'
-								+ '<b>' + T['_cnt'] + '</b><small> authors, </small>'
-								+ 	'<b>' + Math.round(T['size']/1024) + '</b><small>kB, </small>'
-								+ 	'<b class="text-success">+' + T['lines_a'] + '</b><small>, </small>'
-								+ 	'<b class="text-danger">-' + T['lines_r'] + '</b><small> lines</small>'
-						}
+						]
 					]
 				],
 				[
@@ -272,13 +237,7 @@
 									'height':650,
 								}
 							]
-						],
-						function (T) { return '<b>' + T['commits'] + '</b><small> commits, </small>'
-								+ '<b>' + T['_cnt'] + '</b><small> authors, </small>'
-								+ 	'<b>' + Math.round(T['size']/1024) + '</b><small>kB, </small>'
-								+ 	'<b class="text-success">+' + T['lines_a'] + '</b><small>, </small>'
-								+ 	'<b class="text-danger">-' + T['lines_r'] + '</b><small> lines</small>'
-						}
+						]
 					]
 				]
 			];
@@ -294,7 +253,6 @@
 			var g_idx=0;
 			for ( var i in tab[actTID] ) {
 				var Data = getData("/api/p/" + Project + tab[actTID][i][Iurl]);
-				drawDaySummary(tab[actTID][i][Isub], Data['report']);
 				for ( var j in tab[actTID][i][Igrid] ) {
 					var Table = metric2Table(
 									Data,
@@ -429,9 +387,6 @@
 				<span id="github_url"></span>
 			</div>
 		</div>
-		<div class="col-lg-5" style="padding-top: 10px;">
-			<h4><span id="summary"></span></h4>
-		</div>
 		<div class="col-lg-3">
 			<h4>
 			<button id="day_minus" class="btn btn-success btn-lg">&nbsp;<b> - </b>&nbsp;</button> <button id="day_plus" class="btn btn-success btn-lg">&nbsp;<b> + </b>&nbsp;</button>
@@ -472,14 +427,8 @@
 	</div>
 
     <div class="tab-content">
+        <p></p><div id="fake_div"></div>
 
-	<div class="row text-center">
-		<div class="col-lg-3">
-		</div>
-		<div class="col-lg-6">
-			<h4><span id="last_days_sum"></span></h4>
-		</div>
-	</div>
         <div id="tab1" class="tab-pane">
 			<div class="row">
 				<div class="col-lg-6">
