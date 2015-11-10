@@ -27,7 +27,6 @@
 	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-	<script type="text/javascript" src="/assets/jquery.history.js"></script>
 	<script type="text/javascript">
 	google.load('visualization', '1.0', {'packages':['corechart']});
 	google.setOnLoadCallback(initMe);
@@ -47,9 +46,10 @@
 
 		$("#dashtabs li:eq("+S['tab']+") a").tab('show');
 		$(window).resize(function(){ refresh(S['days'],0); });
-		$("#day_minus").click(function() { S['days']=refresh(S['days'],-10); addHistory(); });
-		$("#day_plus").click(function() { S['days']=refresh(S['days'],10); addHistory(); });
-		$("#project_div").change(function() { refresh(S['days'],0); drawSummary(); addHistory(); });
+		$("#day_minus").click(function() { S['days']=refresh(S['days'],-10); });
+		$("#day_plus").click(function() { S['days']=refresh(S['days'],10); });
+		$("#project_div").change(function() { refresh(S['days'],0); drawSummary(); });
+		$("#link_btn").click(function() { prompt('Paste current URL', getCurUrl()) });
 
 		$(document).ready(function(){
 			$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
@@ -57,30 +57,19 @@
 				S['tab'] = act.substring(4, act.length);
 				GS = new Array();
 				refresh(S['days'],0);
-				addHistory();
 			});
-		});
-		$(function() {
-			if ( History.enabled ) {
-				History.Adapter.bind(window,'statechange',function() {
-					var s = History.getState();
-					var url = s.url.split('?')[1];
-					if ( S['days'] != getUrlParameter( 'days', url )
-						|| S['tab'] != getUrlParameter( 'tab', url )
-						|| getActiveProject() != getUrlParameter( 'proj', url ) ) {
-						location.reload();
-					}
-				});
-			}
 		});
 		refresh(S['days'],0);
 	}
 
-	function addHistory () {
-		if ( History.enabled ) {
-			History.pushState(null, null, "?proj=" + encodeURIComponent(getActiveProject())
-				+ "&days=" + S['days'] + "&tab=" + S['tab']);
+	function getCurUrl() {
+		var cUrl = "?proj=" + encodeURIComponent(getActiveProject()) + "&days=" + S['days'] + "&tab=" + S['tab'];
+
+		var base = window.location.href
+		if (base.indexOf("?")>-1){
+			base = base.substr(0,base.indexOf("?"));
 		}
+		return base + cUrl.substring(0, cUrl.length);
 	}
 
 	function dump(obj) {
@@ -422,6 +411,11 @@
 <body style="padding: 10px;">
 	<div class="row text-center">
 		<div class="col-lg-3">
+			<div class="btn-group" role="group">
+				<button id="link_btn" type="button" class="btn btn-info btn-lg">
+				<span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+				</button>
+			</div>
 			<div class="btn-group" role="group">
 				<select id="project_div" class="btn-success btn-lg dropdown-toggle btn-block"></select>
 			</div>
