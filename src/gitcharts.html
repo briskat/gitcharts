@@ -125,75 +125,81 @@
 			: (b[2] > b[1] && b[2] > a[1] && b[2] > a[2] ) ? 1
 			: -1;
 	}
-
-	function metric2Table(jsonData,xname,Report,fsort,limit) {
-		var Table = new google.visualization.DataTable();
-		Table.addColumn('string', xname);
-		for ( var j in Report ) {
-			if ( Report[j] ) {
-				Table.addColumn('number', Report[j]);
-			} else {
-				Table.addColumn('string', Report[j]);
-			}
-		}
-
-		var metrics=jsonData['report']['metrics'];
-		var rows = new Array();
-		for ( var x_idx in jsonData['report']['x'] ) {
-			var row=[];
-			row.push(jsonData['report']['x'][x_idx]);
-			for ( var j in Report ) {
-				if ( Report[j] ) {
-					row.push(metrics[Report[j]][x_idx]);
-				} else {
-					row.push('');
-				}
-			}
-			rows.push(row);
-		}
-		if ( fsort ) {
-			rows.sort(fsort)
-		}
-		if ( limit ) {
-			Table.addRows(rows.slice(0,limit));
-		} else {
-			Table.addRows(rows);
-		}
-		return Table;
+	function chop(body,limit) {
+		return limit > 0 ? body.slice(0,limit)
+			: limit < 0 ? body.slice(limit,body.length)
+			: body;
 	}
+
+	function empty_data (header) {
+		var data =[['']];
+		for (i = 1; i < header[0].length; i++) {
+			data[0][i] = 0;
+		}
+		return data;
+	}
+
+	function metric2Data(jsonData,header,fields) {
+		if (jsonData.length == 0) return empty_data(header);
+
+		var body;
+		if ( fields ) {
+			body = $.map(jsonData, function(n,i){
+				var row = new Array();
+				row.push(n[0]);
+				for ( var idx in fields ) {
+					// round makes 0 from null values
+					row.push(Math.round(n[fields[idx]]));
+				}
+			   return [row];
+			});
+		} else {
+			body = jsonData;
+		}
+
+		return body;
+	}
+
+	function data2Table(header, data) {
+		var dataTable = google.visualization.arrayToDataTable(header.concat(data));
+		var formatter = new google.visualization.NumberFormat(
+		    { negativeColor: 'red', negativeParens: true, pattern: '###,###.#'});
+		for (i = 0; i < data[0].length; i++) {
+			formatter.format(dataTable, i);
+		}
+		return dataTable;
+	}
+
 
 	function drawDashboard(Project,days) {
 			gv = google.visualization;
 			var actTID = S['tab']-1;
 			var Iurl = 0;
-			var Ixaxis = 1;
-			var Igrid = 2;
-			var Isub = 3;
-			var Ilistener = 4;
+			var Igrid = 1;
+			var Ilistener = 2;
 			var tab = [
 				[
 					[
 						"/r/last_x_days?days=" + days,
-						'date',
 						[
-							[ gv.ColumnChart, 'commits_div', [ 'commits' ], { 'height':350 } ],
-							[ gv.ColumnChart, 'size_div',    [ 'size' ], { 'height':350 } ],
-							[ gv.LineChart,   'files_div',   [ 'files_c', 'files_r', 'files_a' ], { 'height':350 } ],
-							[ gv.LineChart,   'lines_div',   [ 'lines_a', 'lines_r' ], { 'height':350 } ],
+							[ gv.ColumnChart, 'commits_div', { 'height':350 }, [['Date','Commits']], [4] ],
+							[ gv.ColumnChart, 'size_div', { 'height':350 }, [['Date','Size']], [1] ],
+							[ gv.LineChart,   'files_div', { 'height':350 }, [['Date','Modified Files','Deleted Files','Added Files']], [7,6,5] ],
+							[ gv.LineChart,   'lines_div', { 'height':350 }, [['Date','Lines Added','Lines Deleted']], [2,3] ]
 						]
 					]
 				],
 				[
 					[
 						"/r/last_x_days_c?days=" + days,
-						'author',
 						[
-							[ gv.ColumnChart, 'big_commit_div', [ 'size' ],
+							[ gv.ColumnChart, 'big_commit_div',
 								{ 'height':650,
 									title : 'Click on column for the detail.'
 								},
-								order_abs,
-								12
+								[['Date','Size']],
+								[1],
+								function (mydata) { mydata.sort(order_abs); return chop(mydata,12) }
 							]
 						],
 						'listener'
@@ -202,24 +208,27 @@
 				[
 					[
 						"/r/last_x_days_a?days=" + days,
-						'author',
 						[
-							[ gv.PieChart, 'commit_chart_div', [ 'commits' ],
+							[ gv.PieChart, 'commit_chart_div',
 								{ 'height':350,
 								},
-								order
+								[['Author','Commits']],
+								[4],
+								function (mydata) { mydata.sort(order); return mydata }
 							],
-							[ gv.ColumnChart, 'commit_size_div', [ 'size' ],
+							[ gv.ColumnChart, 'commit_size_div',
 								{ 'height':350,
 								},
-								order_abs,
-								8
+								[['Author','Size']],
+								[1],
+								function (mydata) { mydata.sort(order_abs); return chop(mydata,8) }
 							],
-							[ gv.ColumnChart, 'author_lines', [ 'lines_a', 'lines_r' ],
+							[ gv.ColumnChart, 'author_lines',
 								{ 'height':350,
 								},
-								order_2val,
-								8
+								[['Author','Lines Added','Lines Deleted']],
+								[2,3],
+								function (mydata) { mydata.sort(order_2val); return chop(mydata,8) }
 							]
 						]
 					]
@@ -227,15 +236,16 @@
 				[
 					[
 						"/r/last_x_days_a?days=" + days,
-						'author',
 						[
-							[ gv.BubbleChart, 'bubble_div', [ 'lines_a', 'lines_r', 'size', 'commits' ],
+							[ gv.BubbleChart, 'bubble_div',
 								{
 									hAxis: {title: 'Lines Added'},
 									vAxis: {title: 'Lines Removed'},
 									explorer: { maxZoomOut: 20 },
 									'height':650,
-								}
+								},
+								[['Author','Lines Added','Lines Deleted','Size','Commits']],
+								[2,3,1,4]
 							]
 						]
 					]
@@ -254,21 +264,23 @@
 			for ( var i in tab[actTID] ) {
 				var Data = getData("/api/p/" + Project + tab[actTID][i][Iurl]);
 				for ( var j in tab[actTID][i][Igrid] ) {
-					var Table = metric2Table(
+					var data = metric2Data(
 									Data,
-									tab[actTID][i][Ixaxis],
-									tab[actTID][i][Igrid][j][2],
-									tab[actTID][i][Igrid][j][4],
-									tab[actTID][i][Igrid][j][5]
+									tab[actTID][i][Igrid][j][3],
+									tab[actTID][i][Igrid][j][4]
 								);
-					var chart=GS[actTID][g_idx++];
-					if ( tab[actTID][i][Ilistener] ) {
-						addListener(chart,Table);
+					var transform = tab[actTID][i][Igrid][j][5];
+					if ( transform ) { data=transform(data); }
+					if ( tab[actTID][i][Igrid][j][1] != 'fake_div' ) {
+						var Table = data2Table(tab[actTID][i][Igrid][j][3], data);
+						var chart=GS[actTID][g_idx++];
+						if ( tab[actTID][i][Ilistener] ) {
+							addListener(chart,Table);
+						}
+						chart.draw(Table, tab[actTID][i][Igrid][j][2]);
 					}
-					chart.draw(Table, tab[actTID][i][Igrid][j][3]);
 				}
 			}
-
 	}
 
 	function githubSucc( response ) {
