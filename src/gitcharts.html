@@ -170,6 +170,24 @@
 		return dataTable;
 	}
 
+	function format1024(val) {
+		var unit = '';
+		if ( Math.abs(val) > 1073741824 ) {
+			val = Math.round(val*10/1073741824)/10;
+			unit = 'GB'
+		}
+		else if ( Math.abs(val) > 1048576 ) {
+			val = Math.round(val*10/1048576)/10;
+			unit = 'MB'
+		}
+		else if ( Math.abs(val) > 1024 ) {
+			val = Math.round(val*10/1024)/10;
+			unit = 'kB'
+		}
+
+		return val+unit;
+	}
+
 
 	function drawDashboard(Project,days) {
 			gv = google.visualization;
