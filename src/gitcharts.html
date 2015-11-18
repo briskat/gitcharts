@@ -350,6 +350,8 @@
 				$( "span#com_sha1" ).text( value.substring(0, 12) );
 				$( "span#com_url" ).html( '<a class="btn btn-success" href="' + url
 					+ '"> View detail on GitHub</a>' );
+				$( "span#comnew_url" ).html( '<a class="btn btn-success" href="' + url
+					+ '" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a>' );
 				$('#com_dialog').modal("show");
 			}
 		}
@@ -522,6 +524,7 @@
 						</div>
 						<div class="modal-footer">
 							<span id="com_url"></span>
+							<span id="comnew_url"></span>
 							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 						</div>
 					</div>
