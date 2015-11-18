@@ -209,9 +209,9 @@
 					[
 						"/r/last_x_days?days=" + days,
 						[
-							[ gv.ColumnChart, 'commits_div', { 'height':350 }, [['Date','Commits']], [4] ],
+							[ gv.ColumnChart, 'commits_div', { 'height':350, isStacked: true }, [['Date','Regular','Merge']], [7,8] ],
 							[ gv.ColumnChart, 'size_div', { 'height':350 }, [['Date','Size']], [1] ],
-							[ gv.LineChart,   'files_div', { 'height':350 }, [['Date','Modified Files','Deleted Files','Added Files']], [7,6,5] ],
+							[ gv.LineChart,   'files_div', { 'height':350 }, [['Date','Modified Files','Deleted Files','Added Files']], [6,5,4] ],
 							[ gv.LineChart,   'lines_div', { 'height':350 }, [['Date','Lines Added','Lines Deleted']], [2,3] ]
 						]
 					]
