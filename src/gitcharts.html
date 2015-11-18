@@ -264,6 +264,10 @@
 			for ( var i in tab[actTID] ) {
 				var Data = getData("/api/p/" + Project + tab[actTID][i][Iurl]);
 				for ( var j in tab[actTID][i][Igrid] ) {
+					if ( tab[actTID][i][Igrid][j][1] == 'fake_div' ) {
+						tab[actTID][i][Igrid][j][2](Data);
+						break;
+					}
 					var data = metric2Data(
 									Data,
 									tab[actTID][i][Igrid][j][3],
@@ -271,14 +275,12 @@
 								);
 					var transform = tab[actTID][i][Igrid][j][5];
 					if ( transform ) { data=transform(data); }
-					if ( tab[actTID][i][Igrid][j][1] != 'fake_div' ) {
-						var Table = data2Table(tab[actTID][i][Igrid][j][3], data);
-						var chart=GS[actTID][g_idx++];
-						if ( tab[actTID][i][Ilistener] ) {
-							addListener(chart,Table);
-						}
-						chart.draw(Table, tab[actTID][i][Igrid][j][2]);
+					var Table = data2Table(tab[actTID][i][Igrid][j][3], data);
+					var chart=GS[actTID][g_idx++];
+					if ( tab[actTID][i][Ilistener] ) {
+						addListener(chart,Table);
 					}
+					chart.draw(Table, tab[actTID][i][Igrid][j][2]);
 				}
 			}
 	}
