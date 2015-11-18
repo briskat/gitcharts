@@ -291,23 +291,20 @@
 			for ( var i in tab[actTID] ) {
 				var Data = getData("/api/p/" + Project + tab[actTID][i][Iurl]);
 				for ( var j in tab[actTID][i][Igrid] ) {
-					if ( tab[actTID][i][Igrid][j][1] == 'fake_div' ) {
-						tab[actTID][i][Igrid][j][2](Data);
+					var rep_dsc = tab[actTID][i][Igrid][j]
+					if ( rep_dsc[1] == 'fake_div' ) {
+						rep_dsc[2](Data,rep_dsc[3]);
 						break;
 					}
-					var data = metric2Data(
-									Data,
-									tab[actTID][i][Igrid][j][3],
-									tab[actTID][i][Igrid][j][4]
-								);
-					var transform = tab[actTID][i][Igrid][j][5];
+					var data = metric2Data( Data, rep_dsc[3], rep_dsc[4]);
+					var transform = rep_dsc[5];
 					if ( transform ) { data=transform(data); }
-					var Table = data2Table(tab[actTID][i][Igrid][j][3], data);
+					var Table = data2Table(rep_dsc[3], data);
 					var chart=GS[actTID][g_idx++];
 					if ( tab[actTID][i][Ilistener] ) {
 						addListener(chart,Table);
 					}
-					chart.draw(Table, tab[actTID][i][Igrid][j][2]);
+					chart.draw(Table, rep_dsc[2]);
 				}
 			}
 	}
