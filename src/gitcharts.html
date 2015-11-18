@@ -39,6 +39,8 @@
 	function initMe() {
 		var tab=parseInt(getUrlParameter('tab'));
 		if (tab > 1 && tab < 5) { S['tab']=tab; }
+		if (S['tab'] < 2 ) { $("#daybtn").hide(); }
+			else { $("#daybtn").show(); }
 		var days=parseInt(getUrlParameter('days'));
 		if (days > 0 && days < 366) { S['days']=days; }
 		loadProjects();
@@ -54,6 +56,11 @@
 			$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
 				var act = $(e.target).attr('href'); // Get the name of active tab
 				S['tab'] = act.substring(4, act.length);
+				if (S['tab'] < 2) {
+					$("#daybtn").hide();
+				} else {
+					$("#daybtn").show();
+				}
 				GS = new Array();
 				refresh(S['days'],0);
 			});
