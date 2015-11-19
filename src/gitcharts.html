@@ -197,6 +197,42 @@
 		return val+unit;
 	}
 
+	function zeroes(cnt,type,zero) {
+		return Array.apply(null, Array(cnt)).map(type,zero);
+	}
+
+	function areaStacked(data) {
+		var pos = {}, cnt = 0;
+		for ( var i in data ) {
+			if ( !pos[data[i][1]] ) {
+				cnt++;
+				pos[data[i][1]] = cnt;
+			}
+		}
+		if ( cnt == 0 ) {
+			return [[["",""]],[["",0]]];
+		}
+		cnt++;
+
+		var header = zeroes(cnt, String.prototype.valueOf,"");
+		Object.keys(pos).forEach(function (key) {
+				header[pos[key]] = key;
+		})
+
+		var lastX, stackData=[], row = zeroes(cnt,Number.prototype.valueOf,0);
+		for ( var i in data ) {
+			if ( lastX !== undefined && lastX !== data[i][0] || i==data.length ) {
+				row[0]=lastX;
+				stackData.push(row);
+				row = zeroes(cnt,Number.prototype.valueOf,0);
+			}
+			row[pos[data[i][1]]] = Math.round(100*data[i][2])/100; // cannot be null - problem in Google graph?
+			lastX = data[i][0];
+		}
+		row[0]=lastX;
+		stackData.push(row);
+		return [[header],stackData];
+	}
 
 	function drawDashboard(Project,days) {
 			gv = google.visualization;
@@ -281,26 +317,41 @@
 
 			if ( GS[actTID] == undefined ) {
 				var GST = new Array(); // reuse graph
-				for ( var i in tab[actTID] )
-					for ( var j in tab[actTID][i][Igrid] )
-						GST.push(new tab[actTID][i][Igrid][j][0](document.getElementById(tab[actTID][i][Igrid][j][1])));
+				for ( var i in tab[actTID] ) {
+					var tabs = tab[actTID][i][Igrid];
+					for ( var j in tabs ) {
+						if ( tabs[j][0] === 'oneNumber' ) {
+							GST.push(0);
+						} else {
+							GST.push(new tabs[j][0](document.getElementById(tabs[j][1])));
+						}
+					}
+				}
 				GS[actTID] = GST;
 			}
 
-			var g_idx=0;
+			var g_idx=-1,data,transform,header;
 			for ( var i in tab[actTID] ) {
 				var Data = getData("/api/p/" + Project + tab[actTID][i][Iurl]);
 				for ( var j in tab[actTID][i][Igrid] ) {
 					var rep_dsc = tab[actTID][i][Igrid][j]
-					if ( rep_dsc[1] == 'fake_div' ) {
-						rep_dsc[2](Data,rep_dsc[3]);
+					g_idx++;
+					if ( rep_dsc[0] == 'oneNumber' ) {
+						rep_dsc[1](Data,rep_dsc[2]);
 						break;
 					}
-					var data = metric2Data( Data, rep_dsc[3], rep_dsc[4]);
-					var transform = rep_dsc[5];
+					if ( rep_dsc[4]) {
+						header = rep_dsc[3];
+						data = metric2Data(Data, header, rep_dsc[4]);
+					} else {
+						var stacked = areaStacked(Data);
+						header = stacked[0];
+						data = stacked[1];
+					}
+					transform = rep_dsc[5];
 					if ( transform ) { data=transform(data); }
-					var Table = data2Table(rep_dsc[3], data);
-					var chart=GS[actTID][g_idx++];
+					var Table = data2Table(header, data);
+					var chart=GS[actTID][g_idx];
 					if ( tab[actTID][i][Ilistener] ) {
 						addListener(chart,Table);
 					}
@@ -467,7 +518,7 @@
 	</div>
 
     <div class="tab-content">
-        <p></p><div id="fake_div"></div>
+        <p></p>
 
         <div id="tab1" class="tab-pane">
 			<div class="row">
