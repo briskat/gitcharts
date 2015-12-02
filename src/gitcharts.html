@@ -479,63 +479,55 @@
 		drawDashboard(Project, days);
 		$( "span#last_days" ).text( days );
 		$( "span#github_url" ).html( '<a class="btn btn-default" href="https://' + getProjectGurl(Project)
-			+ '">GitHub</a>' );
+			+ '">G</a>' );
 		return days;
 	}
 </script>
 <style>
-/* tab color */
-.nav-tabs>li>a {
-	color: #000;
-	border: 1px solid #ccc;
+.navbar {
+	background-color:#000;
 }
 
-/* active tab color */
-.nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
-	color: #fff;
-	background-color: #666;
-}
-
-/* hover tab color */
-.nav-tabs>li>a:hover {
-	color: #222;
-	border-color: #ccc;
+.navbar-brand{
+	background-repeat: no-repeat;
+	padding: 0px 0px 0px 0px;
+	margin: 5px 0px 0px 5px;
 }
 </style>
 </head>
 
-<body style="padding: 10px;">
-	<div class="row text-center">
-		<div class="col-lg-4">
-			<div class="btn-group" role="group">
-				<button type="button" id="help_btn" class="btn btn-info btn-lg" data-toggle="modal" data-target="#mainHelp">
-				<span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
-				</button>
-			</div>
-			<div class="btn-group" role="group">
-				<button id="link_btn" type="button" class="btn btn-info btn-lg">
-				<span class="glyphicon glyphicon-link" aria-hidden="true"></span>
-				</button>
-			</div>
-			<div class="btn-group" role="group">
-				<select id="project_div" class="btn-success btn-lg dropdown-toggle btn-block"></select>
-			</div>
-			<div class="btn-group" role="group">
-				<span id="github_url"></span>
-			</div>
+<body style="padding: 56px 0px 0px 0px;">
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="navbar-header">
+		<div class="btn-group" role="group">
+			<select id="project_div" class="btn-success btn-lg dropdown-toggle btn-block"></select>
 		</div>
-		</div>
+		<div class="btn-group" role="group">
+			<span id="github_url"></span>
+		</div>&nbsp;
+	  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+		<span class="sr-only">Toggle navigation</span>
+		<span class="icon-bar"></span>
+		<span class="icon-bar"></span>
+	  </button>
+	  <a class="navbar-brand" href="/index.html" title="briskat"> </a>
 	</div>
-
-	<div class="row text-center">
-		<div class="col-lg-12">
-			<ul class="nav nav-tabs" id="dashtabs">
-				<li><a data-toggle="tab" href="#tab1">&#8721;</a></li>
-				<li><a data-toggle="tab" href="#tab2"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> t</a></li>
-				<li><a data-toggle="tab" href="#tab3">commits</a></li>
-				<li><a data-toggle="tab" href="#tab4"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
-				<li><a data-toggle="tab" href="#tab5"><span class="glyphicon glyphicon-th" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
-			</ul>
+	<div class="collapse navbar-collapse">
+		&nbsp;<button type="button" id="help_btn" class="btn btn-info btn-lg" data-toggle="modal" data-target="#mainHelp">
+		<span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
+		</button>
+		<button id="link_btn" type="button" class="btn btn-info btn-lg">
+		<span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+		</button>
+		<ul class="nav navbar-nav" id="dashtabs">
+			<li><a data-toggle="tab" href="#tab1">&#8721; summary</a></li>
+			<li><a data-toggle="tab" href="#tab2"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> time</a></li>
+			<li><a data-toggle="tab" href="#tab3">commits</a></li>
+			<li><a data-toggle="tab" href="#tab4"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> commiters</a></li>
+			<li><a data-toggle="tab" href="#tab5"><span class="glyphicon glyphicon-th" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> commiters</a></li>
+		</ul>
+	</div>
+</div>
 	<div class="col-lg-12 text-center" id="daybtn">
 		<h4>
 		<button id="day_minus" class="btn btn-success btn-lg">&nbsp;<b> - </b>&nbsp;</button> <button id="day_plus" class="btn btn-success btn-lg">&nbsp;<b> + </b>&nbsp;</button>
