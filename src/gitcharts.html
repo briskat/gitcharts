@@ -524,31 +524,6 @@
 				<span id="github_url"></span>
 			</div>
 		</div>
-		<div class="col-lg-8" id="daybtn">
-			<h4>
-			<button id="day_minus" class="btn btn-success btn-lg">&nbsp;<b> - </b>&nbsp;</button> <button id="day_plus" class="btn btn-success btn-lg">&nbsp;<b> + </b>&nbsp;</button>
-			<small>Last</small> <big><b><span id="last_days"></span></b></big> <small>days</small>
-			</h4>
-		</div>
-		<div class="modal fade" id="mainHelp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-		  <div class="modal-dialog" role="document">
-			<div class="modal-content">
-			  <div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h2 class="modal-title" id="myModalLabel">Gitcharts analytics</h2>
-					views changes in git repository. Contact us at <b>ask at briskat.com</b>.
-			  </div>
-			  <div class="modal-body text-left">
-						<p>Project data are refreshed from github repositories each hour.
-						Use green buttons to change project or select time period.
-						Click GitHub button (next to Project button) to view original project on GitHub. On commit pane click particular commit to view commit detail.
-						</p>
-			  </div>
-			  <div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			  </div>
-			</div>
-		  </div>
 		</div>
 	</div>
 
@@ -561,216 +536,229 @@
 				<li><a data-toggle="tab" href="#tab4"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
 				<li><a data-toggle="tab" href="#tab5"><span class="glyphicon glyphicon-th" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span></a></li>
 			</ul>
+	<div class="col-lg-12 text-center" id="daybtn">
+		<h4>
+		<button id="day_minus" class="btn btn-success btn-lg">&nbsp;<b> - </b>&nbsp;</button> <button id="day_plus" class="btn btn-success btn-lg">&nbsp;<b> + </b>&nbsp;</button>
+		<small>Last</small> <big><b><span id="last_days"></span></b></big> <small>days</small>
+		</h4>
+	</div>
+	<div class="modal fade" id="mainHelp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  <div class="modal-dialog" role="document">
+		<div class="modal-content">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h2 class="modal-title" id="myModalLabel">Gitcharts analytics</h2>
+				views changes in git repository. Contact us at <b>ask at briskat.com</b>.
+		  </div>
+		  <div class="modal-body text-left">
+					<p>Project data are refreshed from github repositories each hour.
+					Use green buttons to change project or select time period.
+					Click GitHub button (next to Project button) to view original project on GitHub. On commit pane click particular commit to view commit detail.
+					</p>
+		  </div>
+		  <div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		  </div>
 		</div>
+	  </div>
 	</div>
 
     <div class="tab-content">
         <p></p>
 		<div id="tab1" class="tab-pane">
 			<h2 class="text-center">Repository summary</h2>
-			<div class="row">
-				<div class="col-lg-2">
-					<div class="panel panel-default text-center">
-						<div class="panel-heading">
-							<h1><span id="one_commits"></span></h1>
-							commits
-						</div>
+			<div class="col-lg-2">
+				<div class="panel panel-default text-center">
+					<div class="panel-heading">
+						<h1><span id="one_commits"></span></h1>
+						commits
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-2">
-					<div class="panel panel-default text-center">
-						<div class="panel-heading">
-							<h1><span id="merge_commits"></span></h1>
-							merge commits
-						</div>
+			<div class="col-lg-2">
+				<div class="panel panel-default text-center">
+					<div class="panel-heading">
+						<h1><span id="merge_commits"></span></h1>
+						merge commits
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-2">
-					<div class="panel panel-default text-center">
-						<div class="panel-heading">
-							<h1><span id="one_authors"></span></h1>
-							contributors
-						</div>
+			<div class="col-lg-2">
+				<div class="panel panel-default text-center">
+					<div class="panel-heading">
+						<h1><span id="one_authors"></span></h1>
+						contributors
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-2">
-					<div class="panel panel-default text-center">
-						<div class="panel-heading">
-							<h1><span id="merge_authors"></span></h1>
-							merge contributors
-						</div>
+			<div class="col-lg-2">
+				<div class="panel panel-default text-center">
+					<div class="panel-heading">
+						<h1><span id="merge_authors"></span></h1>
+						merge contributors
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-2">
-					<div class="panel panel-default text-center">
-						<div class="panel-heading">
-							<h1><span id="one_size"></span></h1>
-							approximate size
-						</div>
+			<div class="col-lg-2">
+				<div class="panel panel-default text-center">
+					<div class="panel-heading">
+						<h1><span id="one_size"></span></h1>
+						approximate size
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-2">
-					<div class="panel panel-default text-center">
-						<div class="panel-heading">
-							<h1><span id="one_files"></span></h1>
-							approximate no. of files
-						</div>
+			<div class="col-lg-2">
+				<div class="panel panel-default text-center">
+					<div class="panel-heading">
+						<h1><span id="one_files"></span></h1>
+						approximate no. of files
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-6">
-					<div class="panel panel-default">
-						<div class="panel-heading">Commit history
-						</div>
-						<div class="panel-body"><div id="commits_m_div"></div>
-						</div>
+			<div class="col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">Commit history
+					</div>
+					<div class="panel-body"><div id="commits_m_div"></div>
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-6">
-					<div class="panel panel-default">
-						<div class="panel-heading">No. of contributors by month
-						</div>
-						<div class="panel-body"><div id="commiters_y_div"></div>
-						</div>
+			<div class="col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">No. of contributors by month
+					</div>
+					<div class="panel-body"><div id="commiters_y_div"></div>
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-6">
-					<div class="panel panel-default">
-						<div class="panel-heading">Approximate repository size by month
-						</div>
-						<div class="panel-body"><div id="size_m_div"></div>
-						</div>
+			<div class="col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">Approximate repository size by month
+					</div>
+					<div class="panel-body"><div id="size_m_div"></div>
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-6">
-					<div class="panel panel-default">
-						<div class="panel-heading">Approximate no of. files by month
-						</div>
-						<div class="panel-body"><div id="files_m_div"></div>
-						</div>
+			<div class="col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">Approximate no of. files by month
+					</div>
+					<div class="panel-body"><div id="files_m_div"></div>
 					</div>
 				</div>
-
 			</div>
 		</div>
 
         <div id="tab2" class="tab-pane">
-			<div class="row">
-				<div class="col-lg-6">
-					<div class="panel panel-default">
-						<div class="panel-heading">Commits added by day
-						</div>
-						<div class="panel-body"><div id="commits_div"></div>
-						</div>
+			<div class="col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">Commits added by day
+					</div>
+					<div class="panel-body"><div id="commits_div"></div>
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-6">
-					<div class="panel panel-default">
-						<div class="panel-heading">Size changed by day
-						</div>
-						<div class="panel-body"><div id="size_div"></div>
-						</div>
+			<div class="col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">Size changed by day
+					</div>
+					<div class="panel-body"><div id="size_div"></div>
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-6">
-					<div class="panel panel-default">
-						<div class="panel-heading">Files changed, added and removed by day
-						</div>
-						<div class="panel-body"><div id="files_div"></div>
-						</div>
+			<div class="col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">Files changed, added and removed by day
+					</div>
+					<div class="panel-body"><div id="files_div"></div>
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-6">
-					<div class="panel panel-default">
-						<div class="panel-heading">Lines added and removed by day
-						</div>
-						<div class="panel-body"><div id="lines_div"></div>
-						</div>
+			<div class="col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">Lines added and removed by day
+					</div>
+					<div class="panel-body"><div id="lines_div"></div>
 					</div>
 				</div>
 			</div>
         </div>
 
         <div id="tab3" class="tab-pane">
-			<div class="row text-center">
-				<div class="col-lg-12">
-					<div class="panel panel-default">
-						<div class="panel-heading">Biggest commits by changed size
-						</div>
-						<div class="panel-body"><div id="big_commit_div"></div>
-						</div>
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">Biggest commits by changed size
+					</div>
+					<div class="panel-body"><div id="big_commit_div"></div>
 					</div>
 				</div>
-				<div id="com_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-				  <div class="modal-dialog modal-lg">
-					<div class="modal-content">
-						<div class="modal-header">
-							Commit <h3><span id="com_sha1"></span></h3>
-						</div>
-						<div class="modal-body">
-							<div id="com_detail" class="text-left"></div>
-						</div>
-						<div class="modal-footer">
-							<span id="com_url"></span>
-							<span id="comnew_url"></span>
-							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-						</div>
+			</div>
+			<div id="com_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+			  <div class="modal-dialog modal-lg">
+				<div class="modal-content">
+					<div class="modal-header">
+						Commit <h3><span id="com_sha1"></span></h3>
 					</div>
-				  </div>
+					<div class="modal-body">
+						<div id="com_detail" class="text-left"></div>
+					</div>
+					<div class="modal-footer">
+						<span id="com_url"></span>
+						<span id="comnew_url"></span>
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
 				</div>
+			  </div>
 			</div>
         </div>
 
         <div id="tab4" class="tab-pane">
-			<div class="row">
-				<div class="col-lg-5">
-					<div class="panel panel-default">
-						<div class="panel-heading">Commits by author
-						</div>
-						<div class="panel-body"><div id="commit_chart_div"></div>
-						</div>
+			<div class="col-lg-5">
+				<div class="panel panel-default">
+					<div class="panel-heading">Commits by author
+					</div>
+					<div class="panel-body"><div id="commit_chart_div"></div>
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-7">
-					<div class="panel panel-default">
-						<div class="panel-heading">Top commiters by size
-						</div>
-						<div class="panel-body"><div id="commit_size_div"></div>
-						</div>
+			<div class="col-lg-7">
+				<div class="panel panel-default">
+					<div class="panel-heading">Top commiters by size
+					</div>
+					<div class="panel-body"><div id="commit_size_div"></div>
 					</div>
 				</div>
+			</div>
 
-				<div class="col-lg-12">
-					<div class="panel panel-default">
-						<div class="panel-heading">Top commiters by lines added, removed
-						</div>
-						<div class="panel-body"><div id="author_lines"></div>
-						</div>
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">Top commiters by lines added, removed
+					</div>
+					<div class="panel-body"><div id="author_lines"></div>
 					</div>
 				</div>
 			</div>
         </div>
 
         <div id="tab5" class="tab-pane">
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="panel panel-default">
-						<div class="panel-heading">Commits, size and lines by authors
-						</div>
-						<div class="panel-body"><div id="bubble_div"></div>
-						</div>
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">Commits, size and lines by authors
+					</div>
+					<div class="panel-body"><div id="bubble_div"></div>
 					</div>
 				</div>
 			</div>
