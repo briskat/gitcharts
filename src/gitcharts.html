@@ -38,7 +38,7 @@
 
 	function initMe() {
 		var tab=parseInt(getUrlParameter('tab'));
-		if (tab > 1 && tab < 5) { S['tab']=tab; }
+		if (tab > 1 && tab < 7) { S['tab']=tab; }
 		if (S['tab'] < 2 ) { $("#daybtn").hide(); }
 			else { $("#daybtn").show(); }
 		var days=parseInt(getUrlParameter('days'));
@@ -56,7 +56,7 @@
 			$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
 				var act = $(e.target).attr('href'); // Get the name of active tab
 				S['tab'] = act.substring(4, act.length);
-				if (S['tab'] < 2) {
+				if (S['tab'] < 3) {
 					$("#daybtn").hide();
 				} else {
 					$("#daybtn").show();
@@ -286,6 +286,21 @@
 						"/r/summary_a_comtype",
 						[ [ 'oneNumber', tMerge, [ "span#merge_authors" ] ] ]
 					]
+				],
+				[
+					[
+						"/r/summary_ft_size",
+						[
+							[ gv.PieChart, 'ft_size_div', { 'height':650 }, [['File Type','Size']], [1],
+								function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata } ]
+						]
+					],
+					[
+						"/r/summary_mon_ft_size",
+						[
+							[ gv.AreaChart, 'mon_ft_size_div', { 'height':350, isStacked : true },,,runSum ]
+						]
+					],
 				],
 				[
 					[
@@ -521,10 +536,11 @@
 		</button>
 		<ul class="nav navbar-nav" id="dashtabs">
 			<li><a data-toggle="tab" href="#tab1">&#8721; summary</a></li>
-			<li><a data-toggle="tab" href="#tab2"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> time</a></li>
-			<li><a data-toggle="tab" href="#tab3">commits</a></li>
-			<li><a data-toggle="tab" href="#tab4"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> commiters</a></li>
-			<li><a data-toggle="tab" href="#tab5"><span class="glyphicon glyphicon-th" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> commiters</a></li>
+			<li><a data-toggle="tab" href="#tab2"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> file</a></li>
+			<li><a data-toggle="tab" href="#tab3"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> time</a></li>
+			<li><a data-toggle="tab" href="#tab4">commits</a></li>
+			<li><a data-toggle="tab" href="#tab5"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> commiters</a></li>
+			<li><a data-toggle="tab" href="#tab6"><span class="glyphicon glyphicon-th" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> commiters</a></li>
 		</ul>
 	</div>
 </div>
@@ -651,6 +667,26 @@
 		</div>
 
         <div id="tab2" class="tab-pane">
+			<div class="col-lg-4">
+				<div class="panel panel-default">
+					<div class="panel-heading">Size by extension
+					</div>
+					<div class="panel-body"><div id="ft_size_div"></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-8">
+				<div class="panel panel-default">
+					<div class="panel-heading">Size by extension
+					</div>
+					<div class="panel-body"><div id="mon_ft_size_div"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+        <div id="tab3" class="tab-pane">
 			<div class="col-lg-6">
 				<div class="panel panel-default">
 					<div class="panel-heading">Commits added by day
@@ -688,7 +724,7 @@
 			</div>
         </div>
 
-        <div id="tab3" class="tab-pane">
+        <div id="tab4" class="tab-pane">
 			<div class="col-lg-12">
 				<div class="panel panel-default">
 					<div class="panel-heading">Biggest commits by changed size
@@ -716,7 +752,7 @@
 			</div>
         </div>
 
-        <div id="tab4" class="tab-pane">
+        <div id="tab5" class="tab-pane">
 			<div class="col-lg-5">
 				<div class="panel panel-default">
 					<div class="panel-heading">Commits by author
@@ -745,7 +781,7 @@
 			</div>
         </div>
 
-        <div id="tab5" class="tab-pane">
+        <div id="tab6" class="tab-pane">
 			<div class="col-lg-12">
 				<div class="panel panel-default">
 					<div class="panel-heading">Commits, size and lines by authors
