@@ -52,6 +52,8 @@
 		$("#project_div").change(function() { refresh(S['days'],0); });
 		$("#link_btn").click(function() { prompt('Paste current URL', getCurUrl()) });
 
+		$('.nav a').on('click', function(){ $('.navbar-toggle').click() });
+
 		$(document).ready(function(){
 			$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
 				var act = $(e.target).attr('href'); // Get the name of active tab
