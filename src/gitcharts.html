@@ -223,6 +223,19 @@
 		$(span[0]).text(body[0][0] === "M" ? body[0][1] : body[1] ? body[1][1] : '0');
 	}
 
+	function newCommiters(body,span) {
+		var authors="";
+		var url = 'https://' + getProjectGurl(getActiveProject()) + '/commit/';
+		body.sort(order_by_col(0));
+		body.reverse();
+		for (i = 0; i < body.length; i++) {
+			if ( body[i][2] ) {
+				authors = authors + '<a href="' + url + body[i][1]  + '">' + body[i][0] + '</a> (' + body[i][2] + ') ';
+			}
+		}
+		$(span[0]).html( authors );
+	}
+
 	function zeroes(cnt,type,zero) {
 		return Array.apply(null, Array(cnt)).map(type,zero);
 	}
@@ -287,6 +300,10 @@
 					[
 						"/r/summary_a_comtype",
 						[ [ 'oneNumber', tMerge, [ "span#merge_authors" ] ] ]
+					],
+					[
+						"/r/new_commiters?days=30",
+						[ [ 'oneNumber', newCommiters, [ "span#new_authors" ] ] ]
 					]
 				],
 				[
@@ -649,10 +666,19 @@
 				</div>
 			</div>
 
+			<div class="col-lg-12">
+				<div class="panel panel-default text-center">
+					<div class="panel-heading">
+						<h4>First time commiters in the last 30 days <small>(and their first commit)</small></h4>
+						<span id="new_authors"></span>
 			<div class="col-lg-6">
 				<div class="panel panel-default">
 					<div class="panel-heading">Approximate repository size by month
 					</div>
+				</div>
+			</div>
+		</div>
+
 					<div class="panel-body"><div id="size_m_div"></div>
 					</div>
 				</div>
