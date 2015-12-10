@@ -286,8 +286,8 @@
 					[
 						"/r/summary_mon",
 						[
-							[ gv.LineChart, 'commits_m_div', { 'height':450, vAxis: {minValue: 0} }, [['Month','Commits']], [1], runSum ],
-							[ gv.LineChart, 'commiters_y_div', { 'height':450 }, [['Date','Commiters']], [4] ]
+							[ gv.LineChart, 'commits_m_div', { vAxis: {minValue: 0} }, [['Month','Commits']], [1], runSum ],
+							[ gv.LineChart, 'commiters_y_div', {}, [['Date','Commiters']], [4] ]
 						]
 					],
 					[
@@ -311,7 +311,7 @@
 					[
 						"/r/summary_mon",
 						[
-							[ gv.LineChart, 'files_m_div', { 'height':450, vAxis: {minValue: 0} }, [['Date','Files']], [3], runSum, fileListener ]
+							[ gv.LineChart, 'files_m_div', {vAxis: {minValue: 0}}, [['Date','Files']], [3], runSum, fileListener ]
 						]
 					],
 					[
@@ -327,27 +327,27 @@
 					[
 						"/r/summary_ext_size",
 						[
-							[ gv.PieChart, 'ext_size_div', { 'height':450 }, [['Suffix','Size']], [1],
+							[ gv.PieChart, 'ext_size_div', {}, [['Suffix','Size']], [1],
 								function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata } ]
 						]
 					],
 					[
 						"/r/summary_mon",
 						[
-							[ gv.LineChart, 'month_ft_size_div', { 'height':450, vAxis: {minValue: 0} }, [['Date','Size']], [2], runSum, fileListener ]
+							[ gv.LineChart, 'month_ft_size_div', {vAxis: {minValue: 0}}, [['Date','Size']], [2], runSum, fileListener ]
 						]
 					],
 					[
 						"/r/summary_ft_size",
 						[
-							[ gv.PieChart, 'ft_size_div', { 'height':320 }, [['File Type','Size']], [1],
+							[ gv.PieChart, 'ft_size_div', {}, [['File Type','Size']], [1],
 								function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata } ]
 						]
 					],
 					[
 						"/r/summary_mon_ft_size",
 						[
-							[ gv.AreaChart, 'yr_ft_size_div', { 'height':450, isStacked : true },,,runSum ]
+							[ gv.AreaChart, 'yr_ft_size_div', {isStacked : true},,,runSum ]
 						]
 					]
 				],
@@ -355,10 +355,10 @@
 					[
 						"/r/last_x_days?days=" + days,
 						[
-							[ gv.ColumnChart, 'commits_div', { 'height':350, isStacked: true }, [['Date','Regular','Merge']], [7,8] ],
-							[ gv.ColumnChart, 'size_div', { 'height':350 }, [['Date','Size']], [1] ],
-							[ gv.LineChart,   'files_div', { 'height':350 }, [['Date','Modified Files','Deleted Files','Added Files']], [6,5,4] ],
-							[ gv.LineChart,   'lines_div', { 'height':350 }, [['Date','Lines Added','Lines Deleted']], [2,3] ]
+							[ gv.ColumnChart, 'commits_div', {isStacked: true}, [['Date','Regular','Merge']], [7,8] ],
+							[ gv.ColumnChart, 'size_div', {}, [['Date','Size']], [1] ],
+							[ gv.LineChart,   'files_div', {}, [['Date','Modified Files','Deleted Files','Added Files']], [6,5,4] ],
+							[ gv.LineChart,   'lines_div', {}, [['Date','Lines Added','Lines Deleted']], [2,3] ]
 						]
 					]
 				],
@@ -367,9 +367,7 @@
 						"/r/last_x_days_c?days=" + days,
 						[
 							[ gv.ColumnChart, 'big_commit_div',
-								{ 'height':650,
-									title : 'Click on column for the detail.'
-								},
+								{ title : 'Click on column for the detail.' },
 								[['Date','Size']],
 								[1],
 								function (mydata) { mydata.sort(order_abs); return chop(mydata,12) }
@@ -382,30 +380,22 @@
 					[
 						"/r/last_x_days_a?days=" + days,
 						[
-							[ gv.PieChart, 'rcommit_chart_div',
-								{ 'height':350,
-								},
+							[ gv.PieChart, 'rcommit_chart_div', {},
 								[['Author','Commits']],
 								[5],
 								function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata }
 							],
-							[ gv.PieChart, 'mcommit_chart_div',
-								{ 'height':350,
-								},
+							[ gv.PieChart, 'mcommit_chart_div', {},
 								[['Author','Commits']],
 								[6],
 								function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata }
 							],
-							[ gv.ColumnChart, 'commit_size_div',
-								{ 'height':350,
-								},
+							[ gv.ColumnChart, 'commit_size_div', {},
 								[['Author','Size']],
 								[1],
 								function (mydata) { mydata.sort(order_abs); return chop(mydata,8) }
 							],
-							[ gv.ColumnChart, 'author_lines',
-								{ 'height':350,
-								},
+							[ gv.ColumnChart, 'author_lines', {},
 								[['Author','Lines Added','Lines Deleted']],
 								[2,3],
 								function (mydata) { mydata.sort(order_2val); return chop(mydata,8) }
@@ -421,8 +411,7 @@
 								{
 									hAxis: {title: 'Lines Added'},
 									vAxis: {title: 'Lines Removed'},
-									explorer: { maxZoomOut: 20 },
-									'height':650,
+									explorer: { maxZoomOut: 20 }
 								},
 								[['Author','Lines Added','Lines Deleted','Size','Commits']],
 								[2,3,1,4]
@@ -564,6 +553,9 @@
 	padding: 0px 0px 0px 0px;
 	margin: 5px 0px 0px 5px;
 }
+.vh45{ height: 45vh }
+.vh50{ height: 50vh }
+.vh78{ height: 78vh }
 </style>
 </head>
 
@@ -669,19 +661,15 @@
 
 			<div class="col-lg-6">
 				<div class="panel panel-default">
-					<div class="panel-heading">Commit history
-					</div>
-					<div class="panel-body"><div id="commits_m_div"></div>
-					</div>
+					<div class="panel-heading">Commit history</div>
+					<div class="panel-body"><div id="commits_m_div" class="vh50"></div></div>
 				</div>
 			</div>
 
 			<div class="col-lg-6">
 				<div class="panel panel-default">
-					<div class="panel-heading">No. of commiters by month
-					</div>
-					<div class="panel-body"><div id="commiters_y_div"></div>
-					</div>
+					<div class="panel-heading">No. of commiters by month</div>
+					<div class="panel-body"><div id="commiters_y_div" class="vh50"></div></div>
 				</div>
 			</div>
 
@@ -709,10 +697,8 @@
 
 			<div class="col-lg-9">
 				<div class="panel panel-default">
-					<div class="panel-heading">Approximate no of. files by month
-					</div>
-					<div class="panel-body"><div id="files_m_div"></div>
-					</div>
+					<div class="panel-heading">Approximate no of. files by month</div>
+					<div class="panel-body"><div id="files_m_div" class="vh78"></div></div>
 				</div>
 			</div>
 		</div>
@@ -730,38 +716,30 @@
 
 				<div class="col-lg-12">
 					<div class="panel panel-default">
-						<div class="panel-heading">Size by file type
-						</div>
-						<div class="panel-body"><div id="ft_size_div"></div>
-						</div>
+						<div class="panel-heading">Size by file type</div>
+						<div class="panel-body"><div id="ft_size_div" class="vh45"></div></div>
 					</div>
 				</div>
 
 				<div class="col-lg-12">
 					<div class="panel panel-default">
-						<div class="panel-heading">Size by file extension
-						</div>
-						<div class="panel-body"><div id="ext_size_div"></div>
-						</div>
+						<div class="panel-heading">Size by file extension</div>
+						<div class="panel-body"><div id="ext_size_div" class="vh45"></div></div>
 					</div>
 				</div>
 			</div>
 
 			<div class="col-lg-9">
 				<div class="panel panel-default">
-					<div class="panel-heading">Size by file type
-					</div>
-					<div class="panel-body"><div id="month_ft_size_div"></div>
-					</div>
+					<div class="panel-heading">Size by file type</div>
+					<div class="panel-body"><div id="month_ft_size_div" class="vh45"></div></div>
 				</div>
 			</div>
 
 			<div class="col-lg-9">
 				<div class="panel panel-default">
-					<div class="panel-heading">Size by file type
-					</div>
-					<div class="panel-body"><div id="yr_ft_size_div"></div>
-					</div>
+					<div class="panel-heading">Size by file type</div>
+					<div class="panel-body"><div id="yr_ft_size_div" class="vh45"></div></div>
 				</div>
 			</div>
 		</div>
@@ -769,37 +747,29 @@
         <div id="tab4" class="tab-pane">
 			<div class="col-lg-6">
 				<div class="panel panel-default">
-					<div class="panel-heading">Commits added by day
-					</div>
-					<div class="panel-body"><div id="commits_div"></div>
-					</div>
+					<div class="panel-heading">Commits added by day</div>
+					<div class="panel-body"><div id="commits_div" class="vh45"></div></div>
 				</div>
 			</div>
 
 			<div class="col-lg-6">
 				<div class="panel panel-default">
-					<div class="panel-heading">Size changed by day
-					</div>
-					<div class="panel-body"><div id="size_div"></div>
-					</div>
+					<div class="panel-heading">Size changed by day</div>
+					<div class="panel-body"><div id="size_div" class="vh45"></div></div>
 				</div>
 			</div>
 
 			<div class="col-lg-6">
 				<div class="panel panel-default">
-					<div class="panel-heading">Files changed, added and removed by day
-					</div>
-					<div class="panel-body"><div id="files_div"></div>
-					</div>
+					<div class="panel-heading">Files changed, added and removed by day</div>
+					<div class="panel-body"><div id="files_div" class="vh45"></div></div>
 				</div>
 			</div>
 
 			<div class="col-lg-6">
 				<div class="panel panel-default">
-					<div class="panel-heading">Lines added and removed by day
-					</div>
-					<div class="panel-body"><div id="lines_div"></div>
-					</div>
+					<div class="panel-heading">Lines added and removed by day</div>
+					<div class="panel-body"><div id="lines_div" class="vh45"></div></div>
 				</div>
 			</div>
         </div>
@@ -807,10 +777,8 @@
         <div id="tab5" class="tab-pane">
 			<div class="col-lg-12">
 				<div class="panel panel-default">
-					<div class="panel-heading">Biggest commits by changed size
-					</div>
-					<div class="panel-body"><div id="big_commit_div"></div>
-					</div>
+					<div class="panel-heading">Biggest commits by changed size</div>
+					<div class="panel-body"><div id="big_commit_div" class="vh78"></div></div>
 				</div>
 			</div>
 			<div id="com_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
@@ -835,37 +803,29 @@
         <div id="tab6" class="tab-pane">
 			<div class="col-lg-3">
 				<div class="panel panel-default">
-					<div class="panel-heading">Regular commits by author
-					</div>
-					<div class="panel-body"><div id="rcommit_chart_div"></div>
-					</div>
+					<div class="panel-heading">Regular commits by author</div>
+					<div class="panel-body"><div id="rcommit_chart_div" class="vh45"></div></div>
 				</div>
 			</div>
 
 			<div class="col-lg-3">
 				<div class="panel panel-default">
-					<div class="panel-heading">Merge commits by author
-					</div>
-					<div class="panel-body"><div id="mcommit_chart_div"></div>
-					</div>
+					<div class="panel-heading">Merge commits by author</div>
+					<div class="panel-body"><div id="mcommit_chart_div" class="vh45"></div></div>
 				</div>
 			</div>
 
 			<div class="col-lg-6">
 				<div class="panel panel-default">
-					<div class="panel-heading">Top commiters by size
-					</div>
-					<div class="panel-body"><div id="commit_size_div"></div>
-					</div>
+					<div class="panel-heading">Top commiters by size</div>
+					<div class="panel-body"><div id="commit_size_div" class="vh45"></div></div>
 				</div>
 			</div>
 
 			<div class="col-lg-12">
 				<div class="panel panel-default">
-					<div class="panel-heading">Top commiters by lines added, removed
-					</div>
-					<div class="panel-body"><div id="author_lines"></div>
-					</div>
+					<div class="panel-heading">Top commiters by lines added, removed</div>
+					<div class="panel-body"><div id="author_lines" class="vh45"></div></div>
 				</div>
 			</div>
         </div>
@@ -873,10 +833,8 @@
         <div id="tab7" class="tab-pane">
 			<div class="col-lg-12">
 				<div class="panel panel-default">
-					<div class="panel-heading">Commits, size and lines by authors
-					</div>
-					<div class="panel-body"><div id="bubble_div"></div>
-					</div>
+					<div class="panel-heading">Commits, size and lines by authors</div>
+					<div class="panel-body"><div id="bubble_div" class="vh78"></div></div>
 				</div>
 			</div>
 		</div>
