@@ -38,8 +38,8 @@
 
 	function initMe() {
 		var tab=parseInt(getUrlParameter('tab'));
-		if (tab > 1 && tab < 7) { S['tab']=tab; }
-		if (S['tab'] < 2 ) { $("#daybtn").hide(); }
+		if (tab > 1 && tab < 8) { S['tab']=tab; }
+		if (S['tab'] < 4 ) { $("#daybtn").hide(); }
 			else { $("#daybtn").show(); }
 		var days=parseInt(getUrlParameter('days'));
 		if (days > 0 && days < 366) { S['days']=days; }
@@ -58,7 +58,7 @@
 			$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
 				var act = $(e.target).attr('href'); // Get the name of active tab
 				S['tab'] = act.substring(4, act.length);
-				if (S['tab'] < 3) {
+				if (S['tab'] < 4) {
 					$("#daybtn").hide();
 				} else {
 					$("#daybtn").show();
@@ -211,12 +211,15 @@
 		return val+unit;
 	}
 
-	function tHeadSum(body,span) {
+	function tHeadSum1(body,span) {
 		$(span[0]).text(body[0].toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,'));
-		$(span[1]).text(format1024(body[1]));
-		$(span[2]).text(body[2].toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,'));
-		$(span[3]).text(body[3].toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,'));
+		$(span[1]).text(body[3].toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,'));
 	}
+	function tHeadSum2(body,span) {
+		$(span[0]).text(body[2].toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,'));
+	}
+	function tHeadSum3(body,span) {
+		$(span[0]).text(format1024(body[1]));
 	}
 
 	function tMerge(body,span) {
@@ -283,19 +286,17 @@
 					[
 						"/r/summary_mon",
 						[
-							[ gv.LineChart, 'commits_m_div', { 'height':350, vAxis: {minValue: 0} }, [['Month','Commits']], [1], runSum ],
-							[ gv.LineChart, 'size_m_div', { 'height':350, vAxis: {minValue: 0} }, [['Date','Size']], [2], runSum ],
-							[ gv.LineChart, 'files_m_div', { 'height':350, vAxis: {minValue: 0} }, [['Date','Files']], [3], runSum ],
-							[ gv.LineChart, 'commiters_y_div', { 'height':350 }, [['Date','Contributors']], [4] ]
+							[ gv.LineChart, 'commits_m_div', { 'height':450, vAxis: {minValue: 0} }, [['Month','Commits']], [1], runSum ],
+							[ gv.LineChart, 'commiters_y_div', { 'height':450 }, [['Date','Commiters']], [4] ]
 						]
+					],
+					[
+						"/r/summary",
+						[ [ 'oneNumber', tHeadSum1, [ "span#one_commits","span#one_authors" ] ] ]
 					],
 					[
 						"/r/summary_comtype",
 						[ [ 'oneNumber', tMerge, [ "span#merge_commits" ] ] ]
-					],
-					[
-						"/r/summary",
-						[ [ 'oneNumber', tHeadSum, [ "span#one_commits","span#one_size","span#one_files","span#one_authors" ] ] ]
 					],
 					[
 						"/r/summary_a_comtype",
@@ -308,18 +309,47 @@
 				],
 				[
 					[
+						"/r/summary_mon",
+						[
+							[ gv.LineChart, 'files_m_div', { 'height':450, vAxis: {minValue: 0} }, [['Date','Files']], [3], runSum, fileListener ]
+						]
+					],
+					[
+						"/r/summary",
+						[ [ 'oneNumber', tHeadSum2, [ "span#one_files" ] ] ]
+					],
+				],
+				[
+					[
+						"/r/summary",
+						[ [ 'oneNumber', tHeadSum3, [ "span#one_size" ] ] ]
+					],
+					[
+						"/r/summary_ext_size",
+						[
+							[ gv.PieChart, 'ext_size_div', { 'height':450 }, [['Suffix','Size']], [1],
+								function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata } ]
+						]
+					],
+					[
+						"/r/summary_mon",
+						[
+							[ gv.LineChart, 'month_ft_size_div', { 'height':450, vAxis: {minValue: 0} }, [['Date','Size']], [2], runSum, fileListener ]
+						]
+					],
+					[
 						"/r/summary_ft_size",
 						[
-							[ gv.PieChart, 'ft_size_div', { 'height':650 }, [['File Type','Size']], [1],
+							[ gv.PieChart, 'ft_size_div', { 'height':320 }, [['File Type','Size']], [1],
 								function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata } ]
 						]
 					],
 					[
 						"/r/summary_mon_ft_size",
 						[
-							[ gv.AreaChart, 'mon_ft_size_div', { 'height':350, isStacked : true },,,runSum ]
+							[ gv.AreaChart, 'yr_ft_size_div', { 'height':450, isStacked : true },,,runSum ]
 						]
-					],
+					]
 				],
 				[
 					[
@@ -556,10 +586,11 @@
 		<ul class="nav navbar-nav" id="dashtabs">
 			<li><a data-toggle="tab" href="#tab1">&#8721; summary</a></li>
 			<li><a data-toggle="tab" href="#tab2"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> file</a></li>
-			<li><a data-toggle="tab" href="#tab3"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> time</a></li>
-			<li><a data-toggle="tab" href="#tab4">commits</a></li>
-			<li><a data-toggle="tab" href="#tab5"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> commiters</a></li>
-			<li><a data-toggle="tab" href="#tab6"><span class="glyphicon glyphicon-th" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> commiters</a></li>
+			<li><a data-toggle="tab" href="#tab3"><span class="glyphicon glyphicon-cd" aria-hidden="true"></span> size</a></li>
+			<li><a data-toggle="tab" href="#tab4"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> time</a></li>
+			<li><a data-toggle="tab" href="#tab5">commits</a></li>
+			<li><a data-toggle="tab" href="#tab6"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> commiters</a></li>
+			<li><a data-toggle="tab" href="#tab7"><span class="glyphicon glyphicon-th" aria-hidden="true"></span> <span class="glyphicon glyphicon-user" aria-hidden="true"></span> commiters</a></li>
 		</ul>
 	</div>
 </div>
@@ -593,8 +624,7 @@
     <div class="tab-content">
         <p></p>
 		<div id="tab1" class="tab-pane">
-			<h2 class="text-center">Repository summary</h2>
-			<div class="col-lg-2">
+			<div class="col-lg-3">
 				<div class="panel panel-default text-center">
 					<div class="panel-heading">
 						<h1><span id="one_commits"></span></h1>
@@ -603,7 +633,16 @@
 				</div>
 			</div>
 
-			<div class="col-lg-2">
+			<div class="col-lg-3">
+				<div class="panel panel-default text-center">
+					<div class="panel-heading">
+						<h1><span id="one_authors"></span></h1>
+						commiters
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-3">
 				<div class="panel panel-default text-center">
 					<div class="panel-heading">
 						<h1><span id="merge_commits"></span></h1>
@@ -612,38 +651,11 @@
 				</div>
 			</div>
 
-			<div class="col-lg-2">
-				<div class="panel panel-default text-center">
-					<div class="panel-heading">
-						<h1><span id="one_authors"></span></h1>
-						contributors
-					</div>
-				</div>
-			</div>
-
-			<div class="col-lg-2">
+			<div class="col-lg-3">
 				<div class="panel panel-default text-center">
 					<div class="panel-heading">
 						<h1><span id="merge_authors"></span></h1>
-						merge contributors
-					</div>
-				</div>
-			</div>
-
-			<div class="col-lg-2">
-				<div class="panel panel-default text-center">
-					<div class="panel-heading">
-						<h1><span id="one_size"></span></h1>
-						approximate size
-					</div>
-				</div>
-			</div>
-
-			<div class="col-lg-2">
-				<div class="panel panel-default text-center">
-					<div class="panel-heading">
-						<h1><span id="one_files"></span></h1>
-						approximate no. of files
+						merge commiters
 					</div>
 				</div>
 			</div>
@@ -659,7 +671,7 @@
 
 			<div class="col-lg-6">
 				<div class="panel panel-default">
-					<div class="panel-heading">No. of contributors by month
+					<div class="panel-heading">No. of commiters by month
 					</div>
 					<div class="panel-body"><div id="commiters_y_div"></div>
 					</div>
@@ -671,20 +683,24 @@
 					<div class="panel-heading">
 						<h4>First time commiters in the last 30 days <small>(and their first commit)</small></h4>
 						<span id="new_authors"></span>
-			<div class="col-lg-6">
-				<div class="panel panel-default">
-					<div class="panel-heading">Approximate repository size by month
 					</div>
 				</div>
 			</div>
 		</div>
 
-					<div class="panel-body"><div id="size_m_div"></div>
+        <div id="tab2" class="tab-pane">
+			<div class="col-lg-3">
+				<div class="col-lg-12">
+					<div class="panel panel-default text-center">
+						<div class="panel-heading">
+							<h1><span id="one_files"></span></h1>
+							approximate no. of files
+						</div>
 					</div>
 				</div>
 			</div>
 
-			<div class="col-lg-6">
+			<div class="col-lg-9">
 				<div class="panel panel-default">
 					<div class="panel-heading">Approximate no of. files by month
 					</div>
@@ -694,27 +710,56 @@
 			</div>
 		</div>
 
-        <div id="tab2" class="tab-pane">
-			<div class="col-lg-4">
-				<div class="panel panel-default">
-					<div class="panel-heading">Size by extension
+        <div id="tab3" class="tab-pane">
+			<div class="col-lg-3">
+				<div class="col-lg-12">
+					<div class="panel panel-default text-center">
+						<div class="panel-heading">
+							<h1><span id="one_size"></span></h1>
+							approximate size
+						</div>
 					</div>
-					<div class="panel-body"><div id="ft_size_div"></div>
+				</div>
+
+				<div class="col-lg-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">Size by file type
+						</div>
+						<div class="panel-body"><div id="ft_size_div"></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-lg-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">Size by file extension
+						</div>
+						<div class="panel-body"><div id="ext_size_div"></div>
+						</div>
 					</div>
 				</div>
 			</div>
 
-			<div class="col-lg-8">
+			<div class="col-lg-9">
 				<div class="panel panel-default">
-					<div class="panel-heading">Size by extension
+					<div class="panel-heading">Size by file type
 					</div>
-					<div class="panel-body"><div id="mon_ft_size_div"></div>
+					<div class="panel-body"><div id="month_ft_size_div"></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-9">
+				<div class="panel panel-default">
+					<div class="panel-heading">Size by file type
+					</div>
+					<div class="panel-body"><div id="yr_ft_size_div"></div>
 					</div>
 				</div>
 			</div>
 		</div>
 
-        <div id="tab3" class="tab-pane">
+        <div id="tab4" class="tab-pane">
 			<div class="col-lg-6">
 				<div class="panel panel-default">
 					<div class="panel-heading">Commits added by day
@@ -752,7 +797,7 @@
 			</div>
         </div>
 
-        <div id="tab4" class="tab-pane">
+        <div id="tab5" class="tab-pane">
 			<div class="col-lg-12">
 				<div class="panel panel-default">
 					<div class="panel-heading">Biggest commits by changed size
@@ -780,8 +825,8 @@
 			</div>
         </div>
 
-        <div id="tab5" class="tab-pane">
 			<div class="col-lg-5">
+        <div id="tab6" class="tab-pane">
 				<div class="panel panel-default">
 					<div class="panel-heading">Commits by author
 					</div>
@@ -809,7 +854,7 @@
 			</div>
         </div>
 
-        <div id="tab6" class="tab-pane">
+        <div id="tab7" class="tab-pane">
 			<div class="col-lg-12">
 				<div class="panel panel-default">
 					<div class="panel-heading">Commits, size and lines by authors
