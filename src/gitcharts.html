@@ -382,11 +382,18 @@
 					[
 						"/r/last_x_days_a?days=" + days,
 						[
-							[ gv.PieChart, 'commit_chart_div',
+							[ gv.PieChart, 'rcommit_chart_div',
 								{ 'height':350,
 								},
 								[['Author','Commits']],
-								[4],
+								[5],
+								function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata }
+							],
+							[ gv.PieChart, 'mcommit_chart_div',
+								{ 'height':350,
+								},
+								[['Author','Commits']],
+								[6],
 								function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata }
 							],
 							[ gv.ColumnChart, 'commit_size_div',
@@ -825,17 +832,26 @@
 			</div>
         </div>
 
-			<div class="col-lg-5">
         <div id="tab6" class="tab-pane">
+			<div class="col-lg-3">
 				<div class="panel panel-default">
-					<div class="panel-heading">Commits by author
+					<div class="panel-heading">Regular commits by author
 					</div>
-					<div class="panel-body"><div id="commit_chart_div"></div>
+					<div class="panel-body"><div id="rcommit_chart_div"></div>
 					</div>
 				</div>
 			</div>
 
-			<div class="col-lg-7">
+			<div class="col-lg-3">
+				<div class="panel panel-default">
+					<div class="panel-heading">Merge commits by author
+					</div>
+					<div class="panel-body"><div id="mcommit_chart_div"></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-6">
 				<div class="panel panel-default">
 					<div class="panel-heading">Top commiters by size
 					</div>
