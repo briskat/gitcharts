@@ -478,8 +478,8 @@
 		days=days+delta;
 		drawDashboard(Project, days);
 		$( "span#last_days" ).text( days );
-		$( "span#github_url" ).html( '<a class="btn btn-default" href="https://' + getProjectGurl(Project)
-			+ '">G</a>' );
+		$( "span#github_url" ).html( '<a class="btn btn-lg btn-success" href="https://' + getProjectGurl(Project)
+			+ '"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a>' );
 		return days;
 	}
 </script>
@@ -513,10 +513,10 @@
 	  <a class="navbar-brand" href="/index.html" title="briskat"> </a>
 	</div>
 	<div class="collapse navbar-collapse">
-		&nbsp;<button type="button" id="help_btn" class="btn btn-info btn-lg" data-toggle="modal" data-target="#mainHelp">
+		&nbsp;<button type="button" id="help_btn" class="btn btn-info btn-default" data-toggle="modal" data-target="#mainHelp">
 		<span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
 		</button>
-		<button id="link_btn" type="button" class="btn btn-info btn-lg">
+		<button id="link_btn" type="button" class="btn btn-info btn-default">
 		<span class="glyphicon glyphicon-link" aria-hidden="true"></span>
 		</button>
 		<ul class="nav navbar-nav" id="dashtabs">
