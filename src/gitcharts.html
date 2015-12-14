@@ -277,10 +277,7 @@
 
 	function drawDashboard(Project,days) {
 			gv = google.visualization;
-			var actTID = S['tab']-1;
-			var Iurl = 0;
-			var Igrid = 1;
-			var Ilistener = 2;
+			var Iurl = 0, Igrid = 1, actTID = S['tab']-1;
 			var tab = [
 				[
 					[
@@ -370,10 +367,10 @@
 								{ title : 'Click on column for the detail.' },
 								[['Date','Size']],
 								[1],
-								function (mydata) { mydata.sort(order_abs); return chop(mydata,12) }
+								function (mydata) { mydata.sort(order_abs); return chop(mydata,12) },
+								commitListener
 							]
 						],
-						'listener'
 					]
 				],
 				[
@@ -458,8 +455,8 @@
 					if ( transform ) { data=transform(data); }
 					var Table = data2Table(header, data);
 					var chart=GS[actTID][g_idx];
-					if ( tab[actTID][i][Ilistener] ) {
-						addListener(chart,Table);
+					if ( rep_dsc[6] ) {
+						rep_dsc[6](chart,Table);
 					}
 					chart.draw(Table, rep_dsc[2]);
 				}
@@ -498,7 +495,7 @@
 		});
 	}
 
-	function addListener(c,t) {
+	function commitListener(c,t) {
 		var chart=c;
 		var Table=t;
 		google.visualization.events.removeAllListeners(c);
