@@ -268,7 +268,7 @@
 		return [[header],stackData];
 	}
 
-	function drawDashboard(Project,days) {
+	function drawDashboard(Project,days,excl_to) {
 			gv = google.visualization;
 			var Iurl = 0, Igrid = 1, actTID = S['tab']-1;
 			var tab = [
@@ -426,11 +426,16 @@
 				GS[actTID] = GST;
 			}
 
-			var g_idx=-1,data,transform,header;
+			var g_idx=-1,data,transform,header,Data;
 			for ( var i in tab[actTID] ) {
-				var Data = getData("/api/p/" + Project + tab[actTID][i][Iurl]);
 				for ( var j in tab[actTID][i][Igrid] ) {
 					g_idx++;
+					if ( excl_to && g_idx < excl_to ) {
+						continue;
+					}
+					if ( j == 0 ) {
+					    Data = getData("/api/p/" + Project + tab[actTID][i][Iurl]);
+					}
 					var report = tab[actTID][i][Igrid][j]
 					if ( report[0] == 'oneNumber' ) {
 						report[1](Data,report[2]);
@@ -524,12 +529,12 @@
 		return 'github.com/' + url[1].substring(0, url[1].length - 1) + '/' + url[0];
 	}
 
-	function refresh(days,delta) {
+	function refresh(days,delta,excl_to) {
 		if ( days+delta < 1 || days+delta > 366 )
 			return days;
 		var Project = getActiveProject();
+		drawDashboard(Project,days,excl_to);
 		days=days+delta;
-		drawDashboard(Project, days);
 		$( "span#last_days" ).text( days );
 		$( "span#github_url" ).html( '<a class="btn btn-lg btn-success" href="https://' + getProjectGurl(Project)
 			+ '"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a>' );
