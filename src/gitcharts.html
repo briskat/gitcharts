@@ -112,6 +112,15 @@
 		}).responseJSON;
 	}
 
+    function order_alpha(idx) {
+        return function (a, b) {
+			A = a[idx].toUpperCase();
+			B = b[idx].toUpperCase();
+            return A == B ? 0
+                : B > A ? 1
+                    : -1;
+        }
+    }
     function order_by_col(idx) {
         return function (a, b) {
             return b[idx] == a[idx] ? 0
