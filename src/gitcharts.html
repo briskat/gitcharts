@@ -159,9 +159,7 @@
 	function metric2Data(jsonData,header,fields) {
 		if (jsonData.length == 0) return empty_data(header);
 
-		var body;
-		if ( fields ) {
-			body = $.map(jsonData, function(n,i){
+		return $.map(jsonData, function(n,i){
 				var row = new Array();
 				row.push(n[0]);
 				for ( var idx in fields ) {
@@ -170,15 +168,16 @@
 				}
 			   return [row];
 			});
-		} else {
-			body = jsonData;
-		}
-
-		return body;
 	}
 
 	function data2Table(header, data) {
-		var dataTable = google.visualization.arrayToDataTable(header.concat(data));
+		// var dataTable = google.visualization.arrayToDataTable(header.concat(data));
+		var dataTable = new google.visualization.DataTable();
+		dataTable.addColumn('string', header[0][0]);
+		for (i = 1; i < header[0].length; i++) {
+			dataTable.addColumn('number',header[0][i]);
+		}
+		dataTable.addRows(data);
 		var formatter = new google.visualization.NumberFormat(
 		    { negativeColor: 'red', negativeParens: true, pattern: '###,###.#'});
 		for (i = 0; i < data[0].length; i++) {
@@ -431,28 +430,31 @@
 			for ( var i in tab[actTID] ) {
 				var Data = getData("/api/p/" + Project + tab[actTID][i][Iurl]);
 				for ( var j in tab[actTID][i][Igrid] ) {
-					var rep_dsc = tab[actTID][i][Igrid][j]
 					g_idx++;
-					if ( rep_dsc[0] == 'oneNumber' ) {
-						rep_dsc[1](Data,rep_dsc[2]);
+					var report = tab[actTID][i][Igrid][j]
+					if ( report[0] == 'oneNumber' ) {
+						report[1](Data,report[2]);
 						break;
 					}
-					if ( rep_dsc[4]) {
-						header = rep_dsc[3];
-						data = metric2Data(Data, header, rep_dsc[4]);
-					} else {
+					transform = report[5];
+					if ( report[4] ) {
+						header = report[3];
+						data = metric2Data(Data, header, report[4]);
+					} else if ( transform && report[2] && "isStacked" in report[2] ) {
 						var stacked = areaStacked(Data);
 						header = stacked[0];
 						data = stacked[1];
+					} else {
+						header = report[3];
+						data = Data.length == 0 ? empty_data(header) : Data;
 					}
-					transform = rep_dsc[5];
 					if ( transform ) { data=transform(data); }
 					var Table = data2Table(header, data);
 					var chart=GS[actTID][g_idx];
-					if ( rep_dsc[6] ) {
-						rep_dsc[6](chart,Table);
+					if ( report[6] ) {
+						report[6](chart,Table,g_idx);
 					}
-					chart.draw(Table, rep_dsc[2]);
+					chart.draw(Table, report[2]);
 				}
 			}
 	}
