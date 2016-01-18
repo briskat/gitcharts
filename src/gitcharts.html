@@ -62,7 +62,7 @@
 				]
 			],
 			[
-				"/r/summary", // FIXME: make one number reports clickable in HTML - transfer to appropriate tab
+				"/r/summary",
 				[ [ 'oneNumber', tHeadSum, [ "span#sum_commits","span#sum_authors","span#sum_size","span#sum_files" ] ] ]
 			],
 			[
@@ -400,6 +400,7 @@
 			$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
 				var act = $(e.target).attr('href'); // Get the name of active tab
 				S['tab'] = act.substring(1, act.length);
+				$("#r"+S['tab']).tab('show');
 				if ( S['tab'] == 'conact' || S['tab'] == 'concom' ) {
 					$("#btntab0").show();
 					$("#btntab1").show();
@@ -845,6 +846,7 @@
 	}
 </script>
 <style>
+.vh25{ height: 27vh }
 .vh30{ height: 30vh }
 .vh33{ height: 33vh }
 .vh50{ height: 50vh }
@@ -973,16 +975,19 @@ hr {
 		<div id="cact" class="tab-pane">
 			<div id="commits_m_2_div" class="vh30"></div>
 			<div class="col-lg-6 tborder">
-				<div id="commits_div" class="vh30"></div>
+				<br/><div id="commits_div" class="vh25"></div>
 			</div>
-			<div class="col-lg-6 tborder">
-				<div id="size_div" class="vh30"></div>
+			<div class="col-lg-6 tborder text-right">
+				<a data-toggle="tab" href="#sact"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>
+				<div id="size_div" class="vh25"></div>
 			</div>
-			<div class="col-lg-6 lborder">
-				<div id="files_div" class="vh30"></div>
+			<div class="col-lg-6 lborder text-right">
+				<a data-toggle="tab" href="#fact"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>
+				<div id="files_div" class="vh25"></div>
 			</div>
-			<div class="col-lg-6 lborder">
-				<div id="lines_div" class="vh30"></div>
+			<div class="col-lg-6 lborder text-right">
+				<a data-toggle="tab" href="#lact"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>
+				<div id="lines_div" class="vh25"></div>
 			</div>
 		</div>
 
@@ -992,6 +997,7 @@ hr {
 					<div class="panel-heading">
 						<h2><span id="sum_commits"></span> <small>commits</small></h2>
 						( <b><span id="merge_commits"></span></b> merge commits )
+						&nbsp;&nbsp;<a data-toggle="tab" href="#cact"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>
 					</div>
 				</div>
 			</div>
@@ -1001,6 +1007,7 @@ hr {
 					<div class="panel-heading">
 						<h2><span id="sum_authors"></span> <small>contributors</small></h2>
 						( <b><span id="merge_authors"></span></b> mergers )
+						&nbsp;&nbsp;<a data-toggle="tab" href="#conact"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>
 					</div>
 				</div>
 			</div>
@@ -1008,7 +1015,8 @@ hr {
 			<div class="col-lg-3">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h2>~<span id="sum_files"></span> <small>files</small></h2><br/>
+						<h2>~<span id="sum_files"></span> <small>files</small></h2>
+						<a data-toggle="tab" href="#fact"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>
 					</div>
 				</div>
 			</div>
@@ -1016,7 +1024,8 @@ hr {
 			<div class="col-lg-3">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h2>~<span id="sum_size"></span></h2><br/>
+						<h2>~<span id="sum_size"></span></h2>
+						<a data-toggle="tab" href="#sact"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>
 					</div>
 				</div>
 			</div>
