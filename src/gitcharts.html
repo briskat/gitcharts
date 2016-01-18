@@ -516,16 +516,19 @@
 			var selectedItem = chart.getSelection()[0];
 			if (selectedItem && selectedItem.row !== null ) {
 				var value = Table.getValue(selectedItem.row, 0);
-				var proj = getActiveProject();
-				var url = 'https://' + getProjectGurl(proj) + '/commit/' + value;
-				getInfo(proj,value);
-				//githubSucc(1);
-				$( "span#com_sha1" ).text( value.substring(0, 12) );
-				$( "span#com_url" ).html( '<a class="btn btn-success" href="' + url
-					+ '"> View detail on GitHub</a>' );
-				$( "span#comnew_url" ).html( '<a class="btn btn-success" href="' + url
-					+ '" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a>' );
-				$('#com_dialog').modal("show");
+				if ( value === null ) {
+					alert('Commit hash available in paid version only.');
+				} else {
+					var proj = getActiveProject();
+					getInfo(proj,value);
+					var url = 'https://' + getProjectGurl(proj,'') + '/commit/' + value;
+					$( "span#com_sha1" ).text( value.substring(0, 11) );
+					$( "span#com_url" ).html( '<a class="btn btn-success" href="' + url
+						+ '">Go to GitHub</a>' );
+					$( "span#comnew_url" ).html( '<a class="btn btn-success" href="' + url
+						+ '" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a>' );
+					$('#com_dialog').modal("show");
+				}
 			}
 		}
 		google.visualization.events.addListener(chart, 'select', selectHandler);
