@@ -35,7 +35,7 @@
 			[
 				"/r/commits_mo",
 				[
-					[ 'Area', 'commits_m_2_div', {_t: 'Commit activity',vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']],,, dateListener ]
+					[ 'Area', 'commits_m_2_div', {_t: 'Commit activity',vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']],,, dateListener  ]
 				]
 			],
 			[
@@ -55,10 +55,10 @@
 		],
 		'csum' : [
 			[
-				"/r/commit_authors",
+				"/r/commits_mo",
 				[
-					[ 'Area', 'commits_m_0_div', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']], ],
-					[ 'Area', 'commits_m_1_div', {_t:'Total commit activity' }, [['month','total commits']],[1], run_sum ]
+					[ 'Area', 'commits_m_0_div', {_t: 'Commit activity',vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']] ],
+					[ 'Area', 'commits_m_1_div', {_t:'Total commit activity', vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']],, run_sum ]
 				]
 			],
 			[
@@ -319,7 +319,7 @@
 			[
 				"/r/size_yr_ft",
 				[
-					[ 'Area', 'yr_ft_size_div', {_t: 'Size in bytes by file type', isStacked : true},,,run_sum ]
+					[ 'Area', 'yr_ft_size_div', {_t: 'Size in bytes by file type', isStacked : true, _stack: 1 },,,run_sum ]
 				]
 			],
 			[
@@ -728,7 +728,7 @@
 				if ( report[4] ) {
 					header = report[3];
 					data = metric2Data(Data, header, report[4]);
-				} else if ( transform && report[2] && "isStacked" in report[2] ) {
+				} else if ( "_stack" in report[2] ) {
 					var stacked = areaStacked(Data);
 					header = stacked[0];
 					data = stacked[1];
