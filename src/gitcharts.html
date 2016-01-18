@@ -201,6 +201,12 @@
 		return dataTable;
 	}
 
+    function getActiveOpts (div) {
+        var e = document.getElementById(div);
+        var idx = e.selectedIndex < 0 ? 0 : e.selectedIndex;
+        return e.options[idx].value;
+    }
+
 	function format1024(val) {
 		if ( Math.abs(val) > 1073741824 ) {
 			val = Math.round(val*10/1073741824)/10 + 'GB';
