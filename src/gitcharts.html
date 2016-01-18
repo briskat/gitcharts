@@ -514,7 +514,7 @@
 		google.visualization.events.removeAllListeners(c);
 		function selectHandler() {
 			var selectedItem = chart.getSelection()[0];
-			if (selectedItem) {
+			if (selectedItem && selectedItem.row !== null ) {
 				var value = Table.getValue(selectedItem.row, 0);
 				var proj = getActiveProject();
 				var url = 'https://' + getProjectGurl(proj) + '/commit/' + value;
