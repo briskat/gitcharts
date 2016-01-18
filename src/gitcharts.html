@@ -29,6 +29,307 @@
 			term : thisMonth()
 		};
 
+    var _blank = {textPosition : "none"};
+    // FIXME: array -> hash (for tabs)
+    var Conf = [
+        [
+            [
+                "/r/commits_mo",
+                [
+                    [ 'Area', 'commits_m_2_div', {_t: 'Commit activity',vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']],,, dateListener ]
+                ]
+            ],
+            [
+                "/r/commits_summary?d=%m",
+                [
+                    [ 'Column', 'commits_div', {_t: 'Commits, %m', hAxis: _blank, isStacked: true}, [['date','regular','merge']],[1,2] ],
+                    [ 'Area', 'size_div', {_t: 'Changed size, %m', hAxis: _blank }, [['date','bytes']], [3] ],
+                    [ 'Area', 'lines_div', {_t: 'Lines, %m', hAxis: _blank,colors: ["green","red"] }, [['date','added','deleted']], [4,5] ]
+                ]
+            ],
+            [
+                "/r/files_summary?d=%m",
+                [
+                    [ 'Area', 'files_div', {_t: 'Files, %m', hAxis: _blank, colors:["green","red","#3366CC"] }, [['Date','added','deleted','changed']],[1,2,3] ]
+                ]
+            ]
+        ],
+        [
+            [
+                "/r/commit_authors",
+                [
+                    [ 'Area', 'commits_m_0_div', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']], ],
+                    [ 'Area', 'commits_m_1_div', {_t:'Total commit activity' }, [['month','total commits']],[1], run_sum ]
+                ]
+            ],
+            [
+                "/r/summary", // FIXME: make one number reports clickable in HTML - transfer to appropriate tab
+                [ [ 'oneNumber', tHeadSum, [ "span#sum_commits","span#sum_authors","span#sum_size","span#sum_files" ] ] ]
+            ],
+            [
+                "/r/commits_comtype",
+                [ [ 'oneNumber', tMerge, [ "span#merge_commits" ] ] ]
+            ],
+            [
+                "/r/authors_comtype",
+                [ [ 'oneNumber', tMerge, [ "span#merge_authors" ] ] ]
+            ]
+        ],
+        [
+            [
+                "/r/commit_authors",
+                [
+                    [ 'Area', 'commiters_y_div0', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
+                ]
+            ],
+            [
+                "/r/authors_summary?d=%m&dto=%tn",
+                [
+                    [ 'Bubble', 'commiters_div',
+                        {
+                            hAxis: {title: 'lines added'},
+                            vAxis: {title: 'lines removed'},
+                            _t: '%m%tn top commit contributors correlated with changed size and lines',
+                            // FIXME: start from red only when negative start
+                            colors: ['orange', 'green'],
+                            explorer: { maxZoomOut: 20 },
+                            animation:{
+                                 duration: 900,
+                                 easing: 'out'
+                            },
+                        },
+                        [['author','lines added','lines deleted','bytes changed','commits']]
+                    ]
+                ]
+            ]
+        ],
+        [
+            [
+                "/r/commit_authors",
+                [
+                    [ 'Area', 'commiters_y_div1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
+                ]
+            ],
+            [
+                "/r/authors_rcommits?d=%m&dto=%tn",
+                [
+                    [ 'Pie', 'rcommit_chart_div', {_t : '%m%tn regular commit contributors' },
+                        [['Contributor','regular commits']],,
+                        function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata }
+                    ]
+                ],
+            ],
+            [
+                "/r/authors_mcommits?d=%m&dto=%tn",
+                [
+                    [ 'Pie', 'mcommit_chart_div', {_t : '%m%tn merge commit contributors' },
+                        [['Contributor','merge commits']],,
+                        function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata }
+                    ]
+                ]
+            ]
+        ],
+        [
+            [
+                "/r/commit_authors",
+                [
+                    [ 'Area', 'commiters_y_div3', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
+                ]
+            ],
+            [
+                "/r/authors_lines?d=%m",
+                [
+                    [ 'Column', 'author_lines', {_t: '%m top contributors by total no. of changed lines', colors:["green","red"] },
+                        [['Contributor','lines added','lines deleted']],,
+                        function (mydata) { mydata.sort(order_2valsum); return chop(mydata,8) }
+                    ]
+                ]
+            ]
+        ],
+        [
+            [
+                "/r/commit_authors",
+                [
+                    [ 'Area', 'commiters_y_div2', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
+                ]
+            ],
+            [
+                "/r/authors_size?d=%m",
+                [
+                    [ 'Column', 'commit_size_div', {_t: '%m top contributors by size changed' },
+                        [['Contributor','Bytes']],,
+                        function (mydata) { mydata.sort(order_abs); return chop(mydata,12) }
+                    ]
+                ]
+            ]
+        ],
+        [
+            [
+                "/r/new_authors_mo",
+                [
+                    [ 'Area', 'commiters_y_div', {_t: 'Contributors and newcommers'}, [['Date','contributors','new contributors']],,, dateListener ]
+                ]
+            ],
+            [
+                "/r/new_commiters?d=%m",
+                [ [ 'oneNumber', newCommiters, [ "span#new_authors" ] ] ]
+            ]
+        ],
+        [
+            [
+                "/r/lines_mo",
+                [
+                    [ 'Area', 'lines_mo_div', {_t: 'Line additions, removals', colors:["green","red"], vAxis: {minValue: 0}}, [['Date','lines added', 'lines deleted']],,, dateListener ]
+                ]
+            ],
+            [
+                "/r/lines_date?d=%m",
+                [
+                    [ 'Column', 'lines_days_div', {_t: '%d line additions, removals', colors:["green","red"], hAxis: _blank}, [['Date','lines added', 'lines deleted']],,, dateListener ],
+                ]
+            ],
+            [
+                "/r/lines_commit?d=%d",
+                [
+                    [ 'Column', 'lines_commit_div',
+                        {_t : '%d top commits by total changed lines', colors:["green","red"]  },
+                        [['commit','lines added', 'lines deleted']],
+                        ,
+                        function (mydata) { mydata.sort(order_2valsum); return chop(mydata,12) },
+                        commitListener
+                    ]
+                ]
+            ]
+        ],
+        [
+            [
+                "/r/files_added_mo",
+                [
+                    [ 'Area', 'files_a_0_div', {_t:'File addition activity', colors:["green","red"]}, [['Date','files added','files deleted']],,, dateListener1 ],
+                    [ 'Area', 'files_a_1_div', {_t:'Total files'}, [['Date','total files']],, run_sum_files, dateListener ]
+                ]
+            ],
+            [
+                "/r/files_added_date?d=%m",
+                [
+                    [ 'Column', 'det_files_a_div', {_t: '%m file additions, removals', colors:["green","red"], hAxis: _blank }, [['Date','added files','deleted files']],,, dateListener ],
+                ]
+            ],
+            [
+                "/r/files_added_commit?d=%d",
+                [
+                    [ 'Column', 'files_a_commit_div',
+                        {_t : '%d top commits by file additions', colors:["green","red"]  },
+                        [['commit','added files','deleted files']],
+                        ,
+                        function (mydata) { mydata.sort(order_2valsum); return chop(mydata,12) },
+                        commitListener
+                    ]
+                ]
+            ]
+        ],
+        [
+            [
+                "/r/files_changed_mo",
+                [
+                    [ 'Area', 'files_m_0_div', {_t: 'Changed files', vAxis: {minValue: 0}}, [['Date','changed files']],,, dateListener ]
+                ]
+            ],
+            [
+                "/r/files_changed_date?d=%m",
+                [
+                    [ 'Area', 'det_files_m_0_div', {_t: '%d changed files', hAxis: _blank}, [['Date','changed files']],,, dateListener ],
+                ]
+            ],
+            [
+                "/r/files_changed_commit?d=%d",
+                [
+                    [ 'Column', 'files_m_commit_div',
+                        {_t : '%d top commits by changed files'  },
+                        [['commit','changed files']],
+                        ,
+                        function (mydata) { mydata.sort(order_abs); return chop(mydata,12) },
+                        commitListener
+                    ]
+                ]
+            ]
+        ],
+        [
+            [
+                "/r/files_changed_mo",
+                [
+                    [ 'Area', 'files_m_1_div', {_t: 'Changed files', vAxis: {minValue: 0}}, [['Date','changed files']],,, dateListener ]
+                ]
+            ],
+            [
+                "/r/files_changed_date?d=%m",
+                [
+                    [ 'Area', 'det_files_m_1_div', {_t: '%d changed files', hAxis: _blank}, [['Date','changed files']],,, dateListener ],
+                ]
+            ],
+            [
+                "/r/files_changed?d=%d",
+                [
+                    [ 'Column', 'files_changes_div',
+                        {_t : '%d most changed files'  },
+                        [['file name','number of changes']],
+                        ,
+                        function (mydata) { mydata.sort(order_abs); return chop(mydata,12) }
+                    ]
+                ],
+            ]
+        ],
+        [
+            [
+                "/r/size_mo",
+                [
+                    [ 'Area', 'month_size_0_div', {_t:'Changed size'}, [['Date','Bytes']],,, dateListener1 ],
+                    [ 'Area', 'month_size_1_div', {_t:'Total size'}, [['Date','Bytes']],, run_sum, dateListener ]
+                ]
+            ],
+            [
+                "/r/size_date?d=%m",
+                [
+                    [ 'Area', 'det_month_ft_size_div', {_t: 'Changed size, %m', hAxis: _blank}, [['Date','Size']],,, dateListener ],
+                ]
+            ],
+            [
+                "/r/size_commit?d=%d",
+                [
+                    [ 'Table' , 'big_commit_div',
+                        {_t : '%d top commits by size' },
+                        [['Commit','Size']],
+                        ,
+                        function (mydata) { mydata.sort(order_abs); return chop(mydata,12) },
+                        commitListener
+                    ]
+                ],
+            ]
+        ],
+        [
+            [
+                "/r/size_yr_ft",
+                [
+                    [ 'Area', 'yr_ft_size_div', {_t: 'Size in bytes by file type', isStacked : true},,,run_sum ]
+                ]
+            ],
+            [
+                "/r/size_suffix",
+                [
+                    [ 'Pie', 'ext_size_div',{_t: 'Approximate total size in bytes by file extension'}, [['Suffix','Size']],,
+                        function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata } ]
+                ]
+            ],
+            [
+                "/r/size_ft",
+                [
+                    [ 'Pie', 'ft_size_div',{_t: 'Approximate total size in bytes by file type', hAxis: _blank}, [['File Type','Size']],,
+                        function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata } ]
+                ]
+            ]
+        ]
+    ];
+
 	function initMe() {
 		var tab=parseInt(getUrlParameter('t'));
 		if (tab > 1 && tab < 13) { S['tab']=tab; }
@@ -47,8 +348,6 @@
 			$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
 				var act = $(e.target).attr('href'); // Get the name of active tab
 				S['tab'] = act.substring(4, act.length);
-				GS = null;
-				GS = new Array();
 				if (S['tab'] > 2 && S['tab'] < 5) {
 					$("#btntab0").show();
 					$("#btntab1").show();
@@ -122,7 +421,10 @@
 		return $.ajax({
 			url: url,
 			dataType: "json",
-			async: false
+			async: false,
+            error:function () {
+                alert('Error: cannot retrieve data.\n\nPlease try again later or please fill a bug.')
+            }
 		}).responseJSON;
 	}
 
@@ -165,6 +467,12 @@
 			: body;
 	}
 
+	function printf(str,term,month,tn) {
+		str = str.replace("%d", term);
+		str = str.replace("%m", month);
+		str = str.replace("%tn", tn);
+		return str;
+	}
 	function run_sum(body) {
 		if (body.length > 0) {
 			for (i = 1; i < body.length; i++) {
@@ -306,368 +614,92 @@
 		return [[header],stackData];
 	}
 
+    function init_graphs(actTID,Igrid) {
+        var gv = google.visualization;
+        var GST = new Array(); // reuse graph
+        for ( var i in Conf[actTID] ) {
+            var tabs = Conf[actTID][i][Igrid];
+            for ( var j in tabs ) {
+                if ( tabs[j][0] === 'oneNumber' ) {
+                    GST.push(0);
+                } else {
+                    var graph, g_type = tabs[j][0];
+                    if ( g_type === 'Area' ) {
+                        graph = gv.AreaChart;
+                    } else if ( g_type === 'Column' ) {
+                        graph = gv.ColumnChart;
+                    } else if ( g_type === 'Pie' ) {
+                        graph = gv.PieChart;
+                    } else if ( g_type === 'Bubble' ) {
+                        graph = gv.BubbleChart;
+                    } else if ( g_type === 'Table' ) {
+                        graph = gv.Table;
+                    } else {
+                        alert('Unknown chart type');
+                    }
+                    GST.push(new graph(document.getElementById(tabs[j][1])));
+                }
+            }
+        }
+        return GST;
+    }
+
 	function drawDashboard(Project,term,excl_to) {
-			gv = google.visualization;
-			var Iurl = 0, Igrid = 1, actTID = S['tab']-1, month = term.toString().substring(0,7);
-            var till_now = getActiveOpts("when_opt") ? thisMonth() : '';
-            var _blank = {textPosition : "none"};
+		gv = google.visualization;
+		var Iurl = 0, Igrid = 1, actTID = S['tab']-1, month = term.toString().substring(0,7);
+        var till_now = getActiveOpts("when_opt") ? thisMonth() : '';
+        var tn = till_now ? ' - ' + till_now : '';
 
-			var tab = [
-				[
-					[
-						"/r/commits_mo",
-						[
-							[ gv.AreaChart, 'commits_m_2_div', { title: 'Commit activity',vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']],,, dateListener ]
-						]
-					],
-					[
-						"/r/commits_summary?d=" + month,
-						[
-							[ gv.ColumnChart, 'commits_div', {title: 'Commits, ' + month, hAxis: _blank, isStacked: true}, [['date','regular','merge']],[1,2] ],
-							[ gv.AreaChart, 'size_div', {title: 'Changed size, ' + month, hAxis: _blank }, [['date','bytes']], [3] ],
-							[ gv.AreaChart, 'lines_div', {title: 'Lines, ' + month, hAxis: _blank,colors: ["green","red"] }, [['date','added','deleted']], [4,5] ]
-						]
-					],
-					[
-						"/r/files_summary?d=" + month,
-						[
-							[ gv.AreaChart, 'files_div', {title: 'Files, ' + month, hAxis: _blank, colors:["green","red","#3366CC"] }, [['Date','added','deleted','changed']],[1,2,3] ]
-						]
-					]
-				],
-				[
-					[
-						"/r/commit_authors",
-						[
-							[ gv.AreaChart, 'commits_m_0_div', {title:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']], ],
-							[ gv.AreaChart, 'commits_m_1_div', {title:'Total commit activity' }, [['month','total commits']],[1], run_sum ]
-						]
-					],
-					[
-						"/r/summary", // FIXME: make one number reports clickable in HTML - transfer to appropriate tab
-						[ [ 'oneNumber', tHeadSum, [ "span#sum_commits","span#sum_authors","span#sum_size","span#sum_files" ] ] ]
-					],
-					[
-						"/r/commits_comtype",
-						[ [ 'oneNumber', tMerge, [ "span#merge_commits" ] ] ]
-					],
-					[
-						"/r/authors_comtype",
-						[ [ 'oneNumber', tMerge, [ "span#merge_authors" ] ] ]
-					]
-				],
-				[
-					[
-						"/r/commit_authors",
-						[
-							[ gv.AreaChart, 'commiters_y_div0', {title:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
-						]
-					],
-					[
-						"/r/authors_summary?d=" + month + '&dto=' + till_now,
-						[
-							[ gv.BubbleChart, 'commiters_div',
-								{
-									hAxis: {title: 'lines added'},
-									vAxis: {title: 'lines removed'},
-									title: month + (till_now ? ' - ' + till_now : '') + ' top commit contributors correlated with changed size and lines',
-                                    // FIXME: start from red only when negative start
-                                    colors: ['orange', 'green'],
-									explorer: { maxZoomOut: 20 },
-                                    animation:{
-                                         duration: 900,
-                                         easing: 'out'
-                                    },
-								},
-								[['author','lines added','lines deleted','bytes changed','commits']]
-							]
-						]
-					]
-				],
-				[
-					[
-						"/r/commit_authors",
-						[
-							[ gv.AreaChart, 'commiters_y_div1', {title:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
-						]
-					],
-					[
-						"/r/authors_rcommits?d=" + month + '&dto=' + till_now,
-						[
-							[ gv.PieChart, 'rcommit_chart_div', { title : month + (till_now ? ' - ' + till_now : '') + ' regular commit contributors' },
-								[['Contributor','regular commits']],,
-								function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata }
-							]
-						],
-					],
-					[
-						"/r/authors_mcommits?d=" + month + '&dto=' + till_now,
-						[
-							[ gv.PieChart, 'mcommit_chart_div', { title : month + (till_now ? ' - ' + till_now : '') + ' merge commit contributors' },
-								[['Contributor','merge commits']],,
-								function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata }
-							]
-						]
-					]
-				],
-				[
-					[
-						"/r/commit_authors",
-						[
-							[ gv.AreaChart, 'commiters_y_div3', {title:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
-						]
-					],
-					[
-						"/r/authors_lines?d=" + month,
-						[
-							[ gv.ColumnChart, 'author_lines', { title: month + ' top contributors by total no. of changed lines', colors:["green","red"] },
-								[['Contributor','lines added','lines deleted']],,
-								function (mydata) { mydata.sort(order_2valsum); return chop(mydata,8) }
-							]
-						]
-					]
-				],
-				[
-					[
-						"/r/commit_authors",
-						[
-							[ gv.AreaChart, 'commiters_y_div2', {title:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
-						]
-					],
-					[
-						"/r/authors_size?d=" + month,
-						[
-							[ gv.ColumnChart, 'commit_size_div', { title: month + ' top contributors by size changed' },
-								[['Contributor','Bytes']],,
-								function (mydata) { mydata.sort(order_abs); return chop(mydata,12) }
-							]
-						]
-					]
-				],
-				[
-					[
-						"/r/new_authors_mo",
-						[
-							[ gv.AreaChart, 'commiters_y_div', {title: 'Contributors and newcommers'}, [['Date','contributors','new contributors']],,, dateListener ]
-						]
-					],
-					[
-						"/r/new_commiters?d=" + month,
-						[ [ 'oneNumber', newCommiters, [ "span#new_authors" ] ] ]
-					]
-				],
-				[
-					[
-						"/r/lines_mo",
-						[
-							[ gv.AreaChart, 'lines_mo_div', { title: 'Line additions, removals', colors:["green","red"], vAxis: {minValue: 0}}, [['Date','lines added', 'lines deleted']],,, dateListener ]
-						]
-					],
-					[
-						"/r/lines_date?d=" + month,
-						[
-							[ gv.ColumnChart, 'lines_days_div', {title: term + ' line additions, removals', colors:["green","red"], hAxis: _blank}, [['Date','lines added', 'lines deleted']],,, dateListener ],
-						]
-					],
-					[
-						"/r/lines_commit?d=" + term,
-						[
-							[ gv.ColumnChart, 'lines_commit_div',
-								{ title : term + ' top commits by total changed lines', colors:["green","red"]  },
-								[['commit','lines added', 'lines deleted']],
-								,
-								function (mydata) { mydata.sort(order_2valsum); return chop(mydata,12) },
-								commitListener
-							]
-						]
-					]
-				],
-				[
-					[
-						"/r/files_added_mo",
-						[
-							[ gv.AreaChart, 'files_a_0_div', {title:'File addition activity', colors:["green","red"]}, [['Date','files added','files deleted']],,, dateListener1 ],
-							[ gv.AreaChart, 'files_a_1_div', {title:'Total files'}, [['Date','total files']],, run_sum_files, dateListener ]
-						]
-					],
-					[
-						"/r/files_added_date?d=" + month,
-						[
-							[ gv.ColumnChart, 'det_files_a_div', {title: month + ' file additions, removals', colors:["green","red"], hAxis: _blank }, [['Date','added files','deleted files']],,, dateListener ],
-						]
-					],
-					[
-						"/r/files_added_commit?d=" + term,
-						[
-							[ gv.ColumnChart, 'files_a_commit_div',
-								{ title : term + ' top commits by file additions', colors:["green","red"]  },
-								[['commit','added files','deleted files']],
-								,
-								function (mydata) { mydata.sort(order_2valsum); return chop(mydata,12) },
-								commitListener
-							]
-						]
-					]
-				],
-				[
-					[
-						"/r/files_changed_mo",
-						[
-							[ gv.AreaChart, 'files_m_0_div', { title: 'Changed files', vAxis: {minValue: 0}}, [['Date','changed files']],,, dateListener ]
-						]
-					],
-					[
-						"/r/files_changed_date?d=" + month,
-						[
-							[ gv.AreaChart, 'det_files_m_0_div', {title: term + ' changed files', hAxis: _blank}, [['Date','changed files']],,, dateListener ],
-						]
-					],
-					[
-						"/r/files_changed_commit?d=" + term,
-						[
-							[ gv.ColumnChart, 'files_m_commit_div',
-								{ title : term + ' top commits by changed files'  },
-								[['commit','changed files']],
-								,
-								function (mydata) { mydata.sort(order_abs); return chop(mydata,12) },
-								commitListener
-							]
-						]
-					]
-				],
-				[
-					[
-						"/r/files_changed_mo",
-						[
-							[ gv.AreaChart, 'files_m_1_div', { title: 'Changed files', vAxis: {minValue: 0}}, [['Date','changed files']],,, dateListener ]
-						]
-					],
-					[
-						"/r/files_changed_date?d=" + month,
-						[
-							[ gv.AreaChart, 'det_files_m_1_div', {title: term + ' changed files', hAxis: _blank}, [['Date','changed files']],,, dateListener ],
-						]
-					],
-					[
-						"/r/files_changed?d=" + term,
-						[
-							[ gv.ColumnChart, 'files_changes_div',
-								{ title : term + ' most changed files'  },
-								[['file name','number of changes']],
-								,
-								function (mydata) { mydata.sort(order_abs); return chop(mydata,12) }
-							]
-						],
-					]
-				],
-				[
-					[
-						"/r/size_mo",
-						[
-							[ gv.AreaChart, 'month_size_0_div', {title:'Changed size'}, [['Date','Bytes']],,, dateListener1 ],
-							[ gv.AreaChart, 'month_size_1_div', {title:'Total size'}, [['Date','Bytes']],, run_sum, dateListener ]
-						]
-					],
-					[
-						"/r/size_date?d=" + month,
-						[
-							[ gv.AreaChart, 'det_month_ft_size_div', { title: 'Changed size, ' + month, hAxis: _blank}, [['Date','Size']],,, dateListener ],
-						]
-					],
-					[
-						"/r/size_commit?d=" + term,
-						[
-							[ gv.Table, 'big_commit_div',
-								{ title : term + ' top commits by size' },
-								[['Commit','Size']],
-								,
-								function (mydata) { mydata.sort(order_abs); return chop(mydata,12) },
-								commitListener
-							]
-						],
-					]
-				],
-				[
-					[
-						"/r/size_yr_ft",
-						[
-							[ gv.AreaChart, 'yr_ft_size_div', {title: 'Size in bytes by file type', isStacked : true},,,run_sum ]
-						]
-					],
-					[
-						"/r/size_suffix",
-						[
-							[ gv.PieChart, 'ext_size_div',{title: 'Approximate total size in bytes by file extension'}, [['Suffix','Size']],,
-								function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata } ]
-						]
-					],
-					[
-						"/r/size_ft",
-						[
-							[ gv.PieChart, 'ft_size_div',{title: 'Approximate total size in bytes by file type', hAxis: _blank}, [['File Type','Size']],,
-								function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata } ]
-						]
-					]
-				]
-			];
-			// FIXME: directories - size, authors, commits per directory
+		if ( GS[actTID] == undefined ) {
+            GS[actTID] = init_graphs(actTID,Igrid);
+		}
 
-			if ( GS[actTID] == undefined ) {
-				var GST = new Array(); // reuse graph
-				for ( var i in tab[actTID] ) {
-					var tabs = tab[actTID][i][Igrid];
-					for ( var j in tabs ) {
-						if ( tabs[j][0] === 'oneNumber' ) {
-							GST.push(0);
-						} else {
-							GST.push(new tabs[j][0](document.getElementById(tabs[j][1])));
-						}
-					}
+		var g_idx=-1,data,transform,header,Data,url;
+		for ( var i in Conf[actTID] ) {
+			// FIXME - Data rename, reuse the variable
+			for ( var j in Conf[actTID][i][Igrid] ) {
+				g_idx++;
+				if ( excl_to && g_idx < excl_to ) {
+					continue;
 				}
-				GS[actTID] = GST;
-			}
-
-			var g_idx=-1,data,transform,header,Data;
-			for ( var i in tab[actTID] ) {
-				// FIXME - Data rename, reuse the variable
-				// FIXME - handle 404,500 statuses
-				for ( var j in tab[actTID][i][Igrid] ) {
-					g_idx++;
-					if ( excl_to && g_idx < excl_to ) {
-						continue;
-					}
-					if ( j == 0 ) {
-					    Data = getData("/api/p/" + Project + tab[actTID][i][Iurl]);
-					}
-					var report = tab[actTID][i][Igrid][j], ch_opts=report[2];
-					if ( report[0] == 'oneNumber' ) {
-						report[1](Data,report[2]);
-						break;
-					}
-					transform = report[5];
-					if ( report[4] ) {
-						header = report[3];
-						data = metric2Data(Data, header, report[4]);
-					} else if ( transform && report[2] && "isStacked" in report[2] ) {
-						var stacked = areaStacked(Data);
-						header = stacked[0];
-						data = stacked[1];
-					} else {
-						header = report[3];
-						data = Data.length == 0 ? empty_data(header) : Data;
-					}
-					if (Data.length == 0) {
-						ch_opts['title'] = month + ' no data';
-					}
-					if ( transform ) { data=transform(data); }
-					var Table = data2Table(header, data);
-					var chart=GS[actTID][g_idx];
-					if ( report[6] ) {
-						report[6](chart,Table,g_idx);
-					}
-					chart.draw(Table, ch_opts);
+				if ( j == 0 ) {
+					Data = getData("/api/p/" + encodeURIComponent(Project)
+							+ printf(Conf[actTID][i][Iurl],term,month,tn));
 				}
+				var report = Conf[actTID][i][Igrid][j], g_opts=report[2];
+				if ( report[0] == 'oneNumber' ) {
+					report[1](Data,report[2]);
+					break;
+				}
+				transform = report[5];
+				if ( report[4] ) {
+					header = report[3];
+					data = metric2Data(Data, header, report[4]);
+				} else if ( transform && report[2] && "isStacked" in report[2] ) {
+					var stacked = areaStacked(Data);
+					header = stacked[0];
+					data = stacked[1];
+				} else {
+					header = report[3];
+					data = Data.length == 0 ? empty_data(header) : Data;
+				}
+				if ( transform ) { data=transform(data); }
+				var Table = data2Table(header, data);
+				var chart=GS[actTID][g_idx];
+				if ( report[6] ) {
+					report[6](chart,Table,g_idx);
+				}
+                var str = g_opts['_t'];
+					str = str.replace("%d", term);
+					str = str.replace("%m", month);
+					str = str.replace("%tn", tn);
+                    g_opts['title'] = str;
+				if (Data.length == 0) {
+					g_opts['title'] = g_opts['title'].replace(/(\d)[^\d]*$/g, "$1 no data" )
+				}
+				chart.draw(Table, g_opts);
 			}
+		}
 	}
 
 	function githubSucc( response ) {
