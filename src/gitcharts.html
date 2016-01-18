@@ -462,6 +462,9 @@
 						header = report[3];
 						data = Data.length == 0 ? empty_data(header) : Data;
 					}
+					if (Data.length == 0) {
+						ch_opts['title'] = month + ' no data';
+					}
 					if ( transform ) { data=transform(data); }
 					var Table = data2Table(header, data);
 					var chart=GS[actTID][g_idx];
