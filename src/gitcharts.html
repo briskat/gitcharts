@@ -764,7 +764,7 @@
 			d.setUTCSeconds(meta["X-RateLimit-Reset"]);
 			Msg = 'No commit detail available from GitHub until ' + d.toString();
 		} else {
-			Msg = data['message'].replace(/\n\n/, "</h3><br /></br>");
+			Msg = data['commit']['message'].replace(/\n\n/, "</h3><br /></br>");
 			Msg = Msg.replace(/\n/g, "<br />");
 			Msg = '<h4> '+ data['author']['name'] + ', <small>' + data['author']['date'] + '</small></h4><h3> ' + Msg;
 			//</h3>
@@ -775,7 +775,7 @@
 	function getInfo(proj,value) {
 		var url=proj.split(' (');
 		var gurl = "https://api.github.com/repos/" + url[1].substring(0, url[1].length - 1)
-			+ '/' + url[0] + "/git/commits/" + value;
+			+ '/' + url[0] + "/commits/" + value;
 		$.ajax({
 			url: gurl,
 			jsonp: "callback",
