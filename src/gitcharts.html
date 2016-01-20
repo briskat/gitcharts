@@ -842,8 +842,8 @@
 	function refresh(term,excl_to) {
 		var Project = getActiveProject();
 		drawDashboard(Project,term,excl_to);
-		$( "span#github_url" ).html( '<a class="btn btn-sm btn-success" href="https://' + getProjectGurl(Project)
-			+ '"><span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></a>' );
+		$( "span#github_url" ).html( '<a class="btn btn-xs btn-default" href="https://' + getProjectGurl(Project,'')
+			+ '"><span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true">github</span></a>' );
 	}
 </script>
 <style>
@@ -863,19 +863,16 @@ hr {
 <body style="padding: 56px 0px 0px 0px;">
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 	<div class="navbar-header">
-	  <select id="project_div" class="btn btn-success btn-lg dropdown-toggle"></select>
-	  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-		<span class="sr-only">Toggle navigation</span>
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-	  </button>
+		<a href="http://www.briskat.com"><img src="/assets/logo-s.png"></a>
+		<select id="project_div" class="btn btn-success btn-default dropdown-toggle"></select>
+		<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
 	</div>
 	<div class="collapse navbar-collapse">
-		<div class="nav navbar-nav">
-				&nbsp;<span id="github_url"></span>
-				<a href="http://www.briskat.com"><img src="/assets/logo-s.png"></a>
-		</div>
-		<ul class="nav navbar-nav" id="dashtabs">
+		<ul class="nav navbar-nav">
 			<li class="dropdown">
 			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> commits<span class="caret"></span></a>
 			  <ul class="dropdown-menu">
@@ -957,16 +954,17 @@ hr {
 			<div class="btn-group" role="group" id="btntab0">
 					<select id="when_opt" class="btn btn-xs btn-success dropdown-toggle btn-block">
 						<optgroup label="Report period:">
-						<option value="">selected month only</option>
+						<option value="">selected month</option>
 						<option value="now">all months till now</option>
 						</optgroup>
 					</select>
-			</div> |
+			</div>
+			<span id="github_url"></span>
 			<a class="btn btn-xs btn-default" href="https://github.com/briskat/briskat.github.io/issues/new">
-			<span class="glyphicon glyphicon-pencil" aria-hidden="true">bug</span></a> |
+			<span class="glyphicon glyphicon-pencil" aria-hidden="true">bug</span></a>
 			<button id="link_btn" type="button" class="btn btn-xs btn-default">
 			<span class="glyphicon glyphicon-link" aria-hidden="true"></span>
-			</button> |
+			</button>
 			<button type="button" id="help_btn" class="btn btn-xs btn-default" data-toggle="modal" data-target="#mainHelp">
 			<span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
 			</button>
