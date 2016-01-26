@@ -755,7 +755,10 @@
 		} else if ( 'commit' in data ) {
 			Msg = data['commit']['message'].replace(/\n\n/, "</h3><br /></br>");
 			Msg = Msg.replace(/\n/g, "<br />");
-			Msg = '<h4> '+ data['author']['name'] + ', <small>' + data['author']['date'] + '</small></h4><h3> ' + Msg;
+			Msg = '<h4> '+ data['commit']['author']['name'] + ', &nbsp; <small>' + data['commit']['author']['date']
+				+ ', &nbsp; lines: <span class="text-success"> ++' + data['stats']['additions']
+				+ ', </span><span class="text-danger">--' + data['stats']['deletions']
+				+ '</span>, files: ' + data['files'].length + '</small></h4><h3> ' + Msg;
 			//</h3>
 		}
 		$( "div#popup_bod" ).html( Msg );
