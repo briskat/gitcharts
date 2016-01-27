@@ -86,17 +86,27 @@
                 "/r/authors_summary?d=%m&dto=%tn",
                 [
                     [ 'Bubble', 'commiters_div',
-                        {
-                            hAxis: {title: 'lines added'},
-                            vAxis: {title: 'lines removed'},
-                            _t: '%m%tn top commit contributors correlated with changed size and lines',
-                            // FIXME: start from red only when negative start
-                            colors: ['orange', 'green'],
-                            explorer: { maxZoomOut: 20 },
-                            animation:{
-                                 duration: 900,
-                                 easing: 'out'
-                            },
+                        function (data,month,tn) {
+                            var min=max=data[0][3];
+                            for (var i = 0; i < data.length; i++) {
+                                if ( data[i][3] < min ) {
+                                    min = data[i][3];
+                                }
+                                if ( data[i][3] > max ) {
+                                    max = data[i][3];
+                                }
+                            }
+                            return {
+                                    hAxis: {title: 'lines added'},
+                                    vAxis: {title: 'lines removed'},
+                                    title: month + tn + ' top commit contributors correlated with changed size and lines',
+                                    colors: get_red_green(min,max),
+                                    explorer: { maxZoomOut: 20 },
+                                    animation:{
+                                         duration: 900,
+                                         easing: 'out'
+                                    },
+                                };
                         },
                         [['author','lines added','lines deleted','bytes changed','commits']]
                     ]
@@ -329,6 +339,49 @@
             ]
         ]
     ];
+
+    function rgb(ratio,base) {
+            var red,green,blue;
+            if ( ratio < 0 ) {
+                ratio = base + ratio;
+                red = Math.round(255-16*ratio/base);
+                green = Math.round(230*ratio/base);
+                blue = Math.round(220*ratio/base);
+            } else {
+                red = Math.round(239-ratio*222/base);
+                green = Math.round(230-ratio*80/base);
+                blue = Math.round(220-ratio*195/base);
+            }
+            green = green.toString(16);
+            blue = blue.toString(16);
+            if ( green.length < 2 ) {
+                green = '0' + green;
+            }
+            if ( blue.length < 2 ) {
+                blue = '0' + blue;
+            }
+            return '#' + red.toString(16) + green + blue;
+    }
+
+    function get_red_green(min,max) {
+        var from,zero,to,base=255;
+        if ( Math.abs(min) > Math.abs(max) ) {
+            from = "#ff0000";
+            abs_max=Math.abs(min);
+            ratio=Math.round(max*base/Math.abs(abs_max))
+            to = rgb(ratio,base);
+        } else {
+            if ( max == 0 ) {
+                to=from='#efe6dc';
+            } else {
+                to = "#119719";
+                abs_max=Math.abs(max);
+                ratio=Math.round(min*base/Math.abs(abs_max))
+                from = rgb(ratio,base);
+            }
+        }
+        return [from,to];
+    }
 
 	function initMe() {
 		var tab=parseInt(getUrlParameter('t'));
@@ -689,11 +742,11 @@
 				if ( report[6] ) {
 					report[6](chart,Table,g_idx);
 				}
-                var str = g_opts['_t'];
-					str = str.replace("%d", term);
-					str = str.replace("%m", month);
-					str = str.replace("%tn", tn);
-                    g_opts['title'] = str;
+				if (typeof g_opts === "function") {
+					g_opts=g_opts(data,month,tn);
+				} else {
+					g_opts['title'] = printf(g_opts['_t'],term,month,tn);
+				}
 				if (Data.length == 0) {
 					g_opts['title'] = g_opts['title'].replace(/(\d)[^\d]*$/g, "$1 no data" )
 				}
