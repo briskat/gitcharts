@@ -765,9 +765,7 @@
 	}
 
 	function getInfo(proj,value) {
-		var url=proj.split(' (');
-		var gurl = "https://api.github.com/repos/" + url[1].substring(0, url[1].length - 1)
-			+ '/' + url[0] + "/commits/" + value;
+		var gurl = "https://api." + getProjectGurl(proj,'repos/') + "/commits/" + value;
 		$.ajax({
 			url: gurl,
 			jsonp: "callback",
@@ -825,9 +823,9 @@
 		return e.options[e.selectedIndex].value;
 	}
 
-	function getProjectGurl(Proj) {
-		var url=Proj.split(' (');
-		return 'github.com/' + url[1].substring(0, url[1].length - 1) + '/' + url[0];
+	function getProjectGurl(Proj,path) {
+		var url=Proj.split('\\');
+		return 'github.com/' + path + url[1] + '/' + url[0];
 	}
 
 	function refresh(term,skipTo) {
