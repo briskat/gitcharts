@@ -39,17 +39,12 @@
 				]
 			],
 			[
-				"/r/commits_summary?d=%m",
+				"/r/activity?d=%m",
 				[
-					[ 'Column', 'cact_d2', {_t: 'Commits, %m', hAxis: _blank, isStacked: true}, [['date','regular','merge']],[1,2] ],
-					[ 'Area', 'cact_d3', {_t: 'Changed size, %m', hAxis: _blank }, [['date','bytes']], [3] ],
-					[ 'Area', 'cact_d4', {_t: 'Lines, %m', hAxis: _blank,colors: ["green","red"] }, [['date','added','deleted']], [4,5] ]
-				]
-			],
-			[
-				"/r/files_summary?d=%m",
-				[
-					[ 'Area', 'cact_d5', {_t: 'Files, %m', hAxis: _blank, colors:["green","red","#3366CC"] }, [['Date','added','deleted','changed']],[1,2,3] ]
+					[ 'Column', 'cact_d2', {_t: '%m commits', hAxis: _blank, isStacked: true}, [['date','regular','merge']],[1,2] ],
+					[ 'Area', 'cact_d3', {_t: '%m changed size', hAxis: _blank }, [['date','bytes']], [3] ],
+					[ 'Area', 'cact_d4', {_t: '%m lines', hAxis: _blank,colors: ["green","red"] }, [['date','added','deleted']], [4,5] ],
+					[ 'Area', 'cact_d5', {_t: '%m files', hAxis: _blank, colors:["green","red","#3366CC"] }, [['date','added','deleted','changed']],[6,7,8] ]
 				]
 			]
 		],
@@ -63,15 +58,7 @@
 			],
 			[
 				"/r/summary",
-				[ [ 'oneNumber', tHeadSum, [ "span#csum_d1","span#csum_d3","span#csum_d5","span#csum_d6" ] ] ]
-			],
-			[
-				"/r/commits_comtype",
-				[ [ 'oneNumber', tMerge, [ "span#csum_d2" ] ] ]
-			],
-			[
-				"/r/authors_comtype",
-				[ [ 'oneNumber', tMerge, [ "span#csum_d4" ] ] ]
+				[ [ 'oneNumber', tHeadSum, [ "span#csum_d1","span#csum_d2","span#csum_d3","span#csum_d4","span#csum_d5","span#csum_d6" ] ] ]
 			]
 		],
 		'conact' : [
@@ -620,12 +607,11 @@
 
 	function tHeadSum(body,span) {
 		$(span[0]).text(body[0].toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,'));
-		$(span[1]).text(body[3].toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,'));
-		$(span[2]).text(fBytes(body[1]));
-		$(span[3]).text(body[2].toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,'));
-	}
-	function tMerge(body,span) {
-		$(span[0]).text(body[0][0] === "M" ? body[0][1].toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,') : body[1] ? body[1][1].toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,') : '0');
+		$(span[1]).text(body[1]);
+		$(span[2]).text(body[2].toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,'));
+		$(span[3]).text(body[3]);
+		$(span[4]).text(fBytes(body[4]));
+		$(span[5]).text(body[5].toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,'));
 	}
 
 	function newCommiters(body,span,month) {
