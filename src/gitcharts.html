@@ -31,6 +31,7 @@
 
 	var _blank = {textPosition : "none"};
 	var _gr = ["green","red"];
+	var _none = {trigger: 'none'};
 	var Conf = {
 		'cact' : [
 			[
@@ -171,7 +172,7 @@
 				"/r/newcomers?d=%m",
 				[
 					[ 'Table', 'connew_d2', {_t:''}, [['Commit','Date','Name']],,
-						function (mydata) { var col1=order_alpha(1); mydata.sort(col1); return mydata },
+						function (mydata) { var col1=order_alpha(1); mydata.sort(col1); return stringify(mydata) },
 						commitListener
 					],
 					[ 'oneNumber', newCommiters, [ "span#connew_d3" ] ]
@@ -195,10 +196,10 @@
 				"/r/lines_commit?d=%d",
 				[
 					[ 'Column', 'lact_d3',
-						{_t : '%d top commits by total changed lines', colors:["green","red"]  },
+						{_t : '%d top commits by total changed lines', colors:_gr, hAxis: _blank, 'tooltip' : _none },
 						[['commit','lines added', 'lines deleted']],
 						,
-						function (mydata) { mydata.sort(order_2valsum); return chop(mydata,12) },
+						function (mydata) { mydata.sort(order_2valsum); return stringify(chop(mydata,12)) },
 						commitListener
 					]
 				]
@@ -222,10 +223,10 @@
 				"/r/files_added_commit?d=%d",
 				[
 					[ 'Column', 'fact_d4',
-						{_t : '%d top commits by file additions', colors:_gr },
+						{_t : '%d top commits by file additions', colors:_gr, hAxis: _blank, 'tooltip' : _none },
 						[['commit','added files','deleted files']],
 						,
-						function (mydata) { mydata.sort(order_2valsum); return chop(mydata,12) },
+						function (mydata) { mydata.sort(order_2valsum); return stringify(chop(mydata,12)) },
 						commitListener
 					]
 				]
@@ -248,10 +249,10 @@
 				"/r/files_changed_commit?d=%d",
 				[
 					[ 'Column', 'fmodcom_d3',
-						{_t : '%d top commits by changed files'  },
+						{_t : '%d top commits by changed files', hAxis: _blank, 'tooltip' : _none },
 						[['commit','changed files']],
 						,
-						function (mydata) { mydata.sort(order_abs); return chop(mydata,12) },
+						function (mydata) { mydata.sort(order_abs); return stringify(chop(mydata,12)) },
 						commitListener
 					]
 				]
@@ -274,10 +275,10 @@
 				"/r/files_changed?d=%d",
 				[
 					[ 'Column', 'fmodfil_d3',
-						{_t : '%m most changed files'  },
+						{_t : '%d frequently changed files', hAxis: _blank, 'tooltip' : _none },
 						[['file name','no. of changes']],
 						,
-						function (mydata) { mydata.sort(order_abs); return chop(mydata,12) }
+						function (mydata) { mydata.sort(order_abs); return stringify(chop(mydata,12)) } //FIXME add file listner
 					]
 				],
 			]
@@ -300,10 +301,10 @@
 				"/r/size_commit?d=%d",
 				[
 					[ 'Column' , 'sact_d4',
-						{_t : '%d top commits by bytes changed' },
+						{_t : '%d top commits by bytes changed', hAxis: _blank, 'tooltip' : _none },
 						[['Commit','bytes']],
 						,
-						function (mydata) { mydata.sort(order_abs); return chop(mydata,12) },
+						function (mydata) { mydata.sort(order_abs); return stringify(chop(mydata,12)) },
 						commitListener
 					]
 				],
@@ -512,6 +513,13 @@
 		return limit > 0 ? body.slice(0,limit)
 			: limit < 0 ? body.slice(limit,body.length)
 			: body;
+	}
+	function stringify(body) {
+		for (i = 0; i < body.length; i++) {
+			// column chart isn`t kept sorted if x-axis is number
+			body[i][0] = 'c' + body[i][0];
+		}
+		return body;
 	}
 
 	function printf(str,term,month,tn) {
@@ -787,6 +795,11 @@
 		dateListener(c,t,pos+1);
 	}
 
+	function get_label(val) {
+		var label = getData("/api/p/lb_" + encodeURIComponent(getActiveProject())
+					+ '/r/label?id=' + val.substring(1, val.length) + '&attr=commit');
+		return label && label.length > 0 ? label[0] : null;
+	}
 	function commitListener(c,t) {
 		var chart=c;
 		var Table=t;
@@ -794,7 +807,8 @@
 		function selectHandler() {
 			var selectedItem = chart.getSelection()[0];
 			if (selectedItem && selectedItem.row !== null ) {
-				var value = Table.getValue(selectedItem.row, 0);
+				var val = Table.getValue(selectedItem.row, 0);
+				var value=get_label(val);
 				if ( value === null ) {
 					alert('Commit hash available in paid version only.');
 				} else {
@@ -891,7 +905,7 @@ hr {
 			  <ul class="dropdown-menu">
 				<li><a data-toggle="tab" href="#fact" id="rfact"> activity</a></li>
 				<li><a data-toggle="tab" href="#fmodcom" id="rfmodcom"> commits changing most files</a></li>
-				<li><a data-toggle="tab" href="#fmodfil" id="rfmodfil"> most changed files</a></li>
+				<li><a data-toggle="tab" href="#fmodfil" id="rfmodfil"> frequently changed files</a></li>
 			  </ul>
 			</li>
 			<li><a data-toggle="tab" href="#lact" id="rlact"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> lines</a></li>
