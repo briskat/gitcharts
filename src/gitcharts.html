@@ -767,8 +767,8 @@
 		$( "div#popup_bod" ).html( Msg );
 	}
 
-	function getInfo(proj,value) {
-		var gurl = "https://api." + getProjectGurl(proj,'repos/') + "/commits/" + value;
+	function getInfo(proj,path,value) {
+		var gurl = "https://api." + getProjectGurl(proj,'repos/') + path + encodeURIComponent(value);
 		$.ajax({
 			url: gurl,
 			jsonp: "callback",
@@ -794,35 +794,37 @@
 	function dateListener1(c,t,pos) {
 		dateListener(c,t,pos+1);
 	}
-
-	function get_label(val) {
-		var label = getData("/api/p/lb_" + encodeURIComponent(getActiveProject())
-					+ '/r/label?id=' + val.substring(1, val.length) + '&attr=commit');
+	function commitPopUp(proj,table,selectedItem,val,value) {
+		getInfo(proj,'/commits/',value);
+		var url = 'https://' + getProjectGurl(proj,'') + '/commit/' + value;
+		$( "span#popup_head" ).html( value.substring(0, 11) + '</br><small>git show '+ value.substring(0, 11) + '</small>' );
+		$( "span#popup_url" ).html( '<a class="btn btn-success" href="' + url
+			+ '" target="_blank"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>' );
+		$('#com_dialog').modal("show");
+	}
+	function getLabel(proj,val,attr) {
+		var label = getData("/api/p/lb_" + encodeURIComponent(proj)
+					+ '/r/label?id=' + val.substring(1, val.length) + '&attr=' + attr);
 		return label && label.length > 0 ? label[0] : null;
 	}
-	function commitListener(c,t) {
-		var chart=c;
-		var Table=t;
-		google.visualization.events.removeAllListeners(c);
-		function selectHandler() {
-			var selectedItem = chart.getSelection()[0];
-			if (selectedItem && selectedItem.row !== null ) {
-				var val = Table.getValue(selectedItem.row, 0);
-				var value=get_label(val);
-				if ( value === null ) {
-					alert('Commit hash available in paid version only.');
-				} else {
-					var proj = getActiveProject();
-					getInfo(proj,value);
-					var url = 'https://' + getProjectGurl(proj,'') + '/commit/' + value;
-					$( "span#popup_head" ).html( '<small>git show </small>' + value.substring(0, 11) );
-					$( "span#popup_url" ).html( '<a class="btn btn-success" href="' + url
-						+ '"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>' );
-					$( "span#popup_url_out" ).html( '<a class="btn btn-success" href="' + url
-						+ '" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a>' );
-					$('#com_dialog').modal("show");
-				}
+	function popupHandler(chart,table,type,func) {
+		var selectedItem = chart.getSelection()[0];
+		if (selectedItem && selectedItem.row !== null ) {
+			var val = table.getValue(selectedItem.row, 0);
+			var proj = getActiveProject();
+			var value=getLabel(proj,val,type);
+			if ( value === null ) {
+				alert('Detail unavailable. Please wait or report an issue.');
+			} else {
+				func(proj,table,selectedItem,val,value);
 			}
+		}
+	}
+
+	function commitListener(chart,table) {
+		google.visualization.events.removeAllListeners(chart);
+		function selectHandler() {
+			popupHandler(chart,table,'commit',commitPopUp);
 		}
 		google.visualization.events.addListener(chart, 'select', selectHandler);
 	}
@@ -954,7 +956,6 @@ hr {
 				</div>
 				<div class="modal-footer">
 					<span id="popup_url"></span>
-					<span id="popup_url_out"></span>
 					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 				</div>
 			</div>
