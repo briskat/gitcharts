@@ -278,7 +278,7 @@
 						{_t : '%d frequently changed files', hAxis: _blank, 'tooltip' : _none },
 						[['file name','no. of changes']],
 						,
-						function (mydata) { mydata.sort(order_abs); return stringify(chop(mydata,12)) } //FIXME add file listner
+						function (mydata) { mydata.sort(order_abs); return stringify(chop(mydata,12)) }, fileListener
 					]
 				],
 			]
@@ -433,6 +433,25 @@
 				? thisMonth()
 				: term;
 	}
+	function fromTo (term) {
+		var to,from = new Date(term);
+		if ( term.match(/^(\d{4})-(\d{1,2})$/) ) {
+			if (from.getMonth() == 11) {
+				to = new Date(from.getFullYear() + 1, 0, 1);
+			} else {
+				to = new Date(from.getFullYear(), from.getMonth() + 1, 1);
+			}
+		} else {
+			to = new Date(term);
+			to.setDate(to.getDate()+1);
+		}
+		from.setDate(from.getDate()-1);
+		var dfrom = from.getDate(), mfrom = from.getMonth()+1;
+		var dto = to.getDate(), mto = to.getMonth()+1;
+		return [
+			from.getFullYear() + (mfrom < 10 ? '-0' : '-') + mfrom + (dfrom < 10 ? '-0' : '-') + dfrom,
+			to.getFullYear() + (mto < 10 ? '-0' : '-') + mto + (dto < 10 ? '-0' : '-') + dto
+		];
 	}
 
 	function getUrlParameter(sParam,Url) {
@@ -802,6 +821,44 @@
 			+ '" target="_blank"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>' );
 		$('#com_dialog').modal("show");
 	}
+	function getFileUrl(proj,value) {
+		var idx=value.lastIndexOf('/'),path,file
+		if ( idx > -1 ) {
+			path = value.substring(0,idx);
+			file = value.substring(idx+1, value.length);
+		} else {
+			path = '/'
+			file = value;
+		}
+		return 'https://' + getProjectGurl(proj,'') + '/search?q='
+					+ encodeURIComponent(file + ' in:path path:' + path);
+	}
+	function getFileBody(proj,val,term) {
+		var Msg='<table class="table table-striped table-bordered"><tr><th>Commiter</th><th>No. of changes</th></tr>';
+		var data = getData("/api/p/" + encodeURIComponent(proj)
+					+ '/r/file_author?id=' + val.substring(1, val.length) + '&d=' + term);
+		var col1=order_by_col(1);
+		data.sort(col1);
+		for (var i = 0; i < data.length; i++) {
+			Msg += '<tr><td>' + data[i][0] + '</td><td>' + data[i][1] + '</td></tr>';
+		}
+		data = getData("/api/p/" + encodeURIComponent(proj)
+					+ '/r/file?id=' + val.substring(1, val.length));
+		return Msg + '</table><h3 class="text-center"><small>All time: </small>' + data[0] + '<small> commits,</small> '
+			+ data[1] + '<small> contributors</small></h3>'
+	}
+	function filePopUp(proj,table,selectedItem,val,value) {
+		var changes = table.getValue(selectedItem.row, 1);
+		var url = getFileUrl(proj,value);
+		var range = fromTo(S['term']);
+		$( "span#popup_head" ).html( value + '<br/><small>git log --follow --since='
+			+ range[0] + ' --until=' + range[1] + ' ' + value + '</small>' );
+		$( "div#popup_bod" ).html( '<h3 class="text-center">' + changes + '<small> changes in '
+			+ S['term'] + '</small></h3>' + getFileBody(proj,val,S['term']) );
+		$( "span#popup_url" ).html( '<a class="btn btn-success" href="' + url
+			+ '" target="_blank"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>' );
+		$('#com_dialog').modal("show");
+	}
 	function getLabel(proj,val,attr) {
 		var label = getData("/api/p/lb_" + encodeURIComponent(proj)
 					+ '/r/label?id=' + val.substring(1, val.length) + '&attr=' + attr);
@@ -825,6 +882,13 @@
 		google.visualization.events.removeAllListeners(chart);
 		function selectHandler() {
 			popupHandler(chart,table,'commit',commitPopUp);
+		}
+		google.visualization.events.addListener(chart, 'select', selectHandler);
+	}
+	function fileListener(chart,table) {
+		google.visualization.events.removeAllListeners(chart);
+		function selectHandler() {
+			popupHandler(chart,table,'file',filePopUp);
 		}
 		google.visualization.events.addListener(chart, 'select', selectHandler);
 	}
