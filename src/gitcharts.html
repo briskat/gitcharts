@@ -49,6 +49,13 @@
 				S['tab'] = act.substring(4, act.length);
 				GS = null;
 				GS = new Array();
+				if (S['tab'] > 2 && S['tab'] < 5) {
+					$("#btntab0").show();
+					$("#btntab1").show();
+				} else {
+					$("#btntab0").hide();
+					$("#btntab1").hide();
+				}
 				refresh(S['term']);
 			});
 		});
@@ -302,6 +309,7 @@
 	function drawDashboard(Project,term,excl_to) {
 			gv = google.visualization;
 			var Iurl = 0, Igrid = 1, actTID = S['tab']-1, month = term.toString().substring(0,7);
+            var till_now = getActiveOpts("when_opt") ? thisMonth() : '';
             var _blank = {textPosition : "none"};
 
 			var tab = [
@@ -859,6 +867,14 @@ hr {
 		  </div>
 		</div>
         <div class="col-lg-12 text-right">
+            <div class="btn-group" role="group" id="btntab0">
+                    <select id="when_opt" class="btn btn-xs btn-success dropdown-toggle btn-block">
+                        <optgroup label="Report period:">
+                        <option value="">selected month only</option>
+                        <option value="now">all months till now</option>
+                        </optgroup>
+                    </select>
+            </div> |
             <a class="btn btn-xs btn-default" href="https://github.com/briskat/briskat.github.io/issues/new">
             <span class="glyphicon glyphicon-pencil" aria-hidden="true">bug</span></a> |
             <button id="link_btn" type="button" class="btn btn-xs btn-default">
