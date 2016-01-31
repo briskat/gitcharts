@@ -30,6 +30,7 @@
 		};
 
 	var _blank = {textPosition : "none"};
+	var _gr = ["green","red"];
 	var Conf = {
 		'cact' : [
 			[
@@ -43,7 +44,7 @@
 				[
 					[ 'Column', 'cact_d2', {_t: '%m commits', hAxis: _blank, isStacked: true}, [['date','regular','merge']],[1,2] ],
 					[ 'Area', 'cact_d3', {_t: '%m changed size', hAxis: _blank }, [['date','bytes']], [3] ],
-					[ 'Area', 'cact_d4', {_t: '%m lines', hAxis: _blank,colors: ["green","red"] }, [['date','added','deleted']], [4,5] ],
+					[ 'Area', 'cact_d4', {_t: '%m lines', hAxis: _blank,colors: _gr }, [['date','added','deleted']], [4,5] ],
 					[ 'Area', 'cact_d5', {_t: '%m files', hAxis: _blank, colors:["green","red","#3366CC"] }, [['date','added','deleted','changed']],[6,7,8] ]
 				]
 			]
@@ -135,7 +136,7 @@
 			[
 				"/r/authors_lines?d=%m",
 				[
-					[ 'Column', 'conlin_d2', {_t: '%m top contributors by total no. of changed lines', colors:["green","red"] },
+					[ 'Column', 'conlin_d2', {_t: '%m top contributors by total no. of changed lines', colors:_gr },
 						[['Contributor','lines added','lines deleted']],,
 						function (mydata) { mydata.sort(order_2valsum); return chop(mydata,8) }
 					]
@@ -161,13 +162,13 @@
 		],
 		'connew' : [
 			[
-				"/r/newcommers_mo",
+				"/r/newcomers_mo",
 				[
 					[ 'Area', 'connew_d1', {_t: 'Contributors and newcomers', colors: ["purple","sienna"]}, [['Date','contributors','newcomers']],,, dateListener ]
 				]
 			],
 			[
-				"/r/newcommers?d=%m",
+				"/r/newcomers?d=%m",
 				[
 					[ 'Table', 'connew_d2', {_t:''}, [['Commit','Date','Name']],,
 						function (mydata) { var col1=order_alpha(1); mydata.sort(col1); return mydata },
@@ -181,13 +182,13 @@
 			[
 				"/r/lines_mo",
 				[
-					[ 'Area', 'lact_d1', {_t: 'Line additions, removals', colors:["green","red"], vAxis: {minValue: 0}}, [['Date','lines added', 'lines deleted']],,, dateListener ]
+					[ 'Area', 'lact_d1', {_t: 'Line additions, removals', colors:_gr, vAxis: {minValue: 0}}, [['Date','lines added', 'lines deleted']],,, dateListener ]
 				]
 			],
 			[
 				"/r/lines_date?d=%m",
 				[
-					[ 'Column', 'lact_d2', {_t: '%m line additions, removals', colors:["green","red"], hAxis: _blank}, [['Date','lines added', 'lines deleted']],,, dateListener ],
+					[ 'Column', 'lact_d2', {_t: '%m line additions, removals', colors:_gr, hAxis: _blank}, [['Date','lines added', 'lines deleted']],,, dateListener ],
 				]
 			],
 			[
@@ -207,21 +208,21 @@
 			[
 				"/r/files_added_mo",
 				[
-					[ 'Area', 'fact_d1', {_t:'File addition activity', colors:["green","red"]}, [['Date','files added','files deleted']],,, dateListener1 ],
+					[ 'Area', 'fact_d1', {_t:'File addition activity', colors:_gr}, [['Date','files added','files deleted']],,, dateListener1 ],
 					[ 'Area', 'fact_d2', {_t:'Total files'}, [['Date','total files']],, run_sum_files, dateListener ]
 				]
 			],
 			[
 				"/r/files_added_date?d=%m",
 				[
-					[ 'Column', 'fact_d3', {_t: '%m file additions, removals', colors:["green","red"], hAxis: _blank }, [['Date','added files','deleted files']],,, dateListener ],
+					[ 'Column', 'fact_d3', {_t: '%m file additions, removals', colors:_gr, hAxis: _blank }, [['Date','added files','deleted files']],,, dateListener ],
 				]
 			],
 			[
 				"/r/files_added_commit?d=%d",
 				[
 					[ 'Column', 'fact_d4',
-						{_t : '%d top commits by file additions', colors:["green","red"]  },
+						{_t : '%d top commits by file additions', colors:_gr },
 						[['commit','added files','deleted files']],
 						,
 						function (mydata) { mydata.sort(order_2valsum); return chop(mydata,12) },
@@ -396,10 +397,8 @@
 				$("#r"+S['tab']).tab('show');
 				if ( S['tab'] == 'conact' || S['tab'] == 'concom' ) {
 					$("#btntab0").show();
-					$("#btntab1").show();
 				} else {
 					$("#btntab0").hide();
-					$("#btntab1").hide();
 				}
 				refresh(S['term']);
 			});
@@ -737,7 +736,8 @@
 					grOpts['title'] = printf(grOpts['_t'],term,month,tn);
 				}
 				if (data.length == 0) {
-					grOpts['title'] = grOpts['title'].replace(/(\d)[^\d]*$/g, "$1 no data" )
+					grOpts['title'] = grOpts['title'].replace(/(\d)[^\d]*$/g, "$1 "
+						+ (actTID === 'fmodfil' ? " no (significant) file changes" : " no activity/data"));
 				}
 				chart.draw(table, grOpts);
 			}
@@ -751,8 +751,8 @@
 		if ( meta["X-RateLimit-Remaining"] == 0 ) {
 			var d = new Date(0);
 			d.setUTCSeconds(meta["X-RateLimit-Reset"]);
-			Msg = 'No commit detail available from GitHub until ' + d.toString();
-		} else {
+			Msg = 'Limit reached. No commit detail available until ' + d.toString();
+		} else if ( 'commit' in data ) {
 			Msg = data['commit']['message'].replace(/\n\n/, "</h3><br /></br>");
 			Msg = Msg.replace(/\n/g, "<br />");
 			Msg = '<h4> '+ data['author']['name'] + ', <small>' + data['author']['date'] + '</small></h4><h3> ' + Msg;
@@ -837,8 +837,7 @@
 <style>
 .vh25{ height: 27vh }
 .vh30{ height: 30vh }
-.vh33{ height: 33vh }
-.vh50{ height: 50vh }
+.vh50{ height: 55vh }
 .lborder{ border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; border-top: 1px solid #ccc; }
 .tborder{ border-left: 1px solid #ccc; border-top: 1px solid #ccc; }
 hr {
@@ -1018,10 +1017,10 @@ hr {
 			</div>
 
 			<div class="col-lg-12">
-				<div id="csum_d7" class="vh33"></div><hr/>
+				<div id="csum_d7" class="vh30"></div><hr/>
 			</div>
 			<div class="col-lg-12">
-				<div id="csum_d8" class="vh33"></div><hr/>
+				<div id="csum_d8" class="vh30"></div><hr/>
 			</div>
 		</div>
 
@@ -1049,8 +1048,8 @@ hr {
 		<div id="connew" class="tab-pane">
 			<div id="connew_d1" class="vh30"></div><hr/>
 			<div class="text-center vh50">
-				<h5><b><span id="connew_d3"></span>, first time contributors</b></h5>
-				<center><div id="connew_d2"></div></center>
+				<h3><span id="connew_d3"></span> newcomers</h3>
+				<div id="connew_d2"></div>
 			</div>
 		</div>
 
@@ -1108,9 +1107,10 @@ hr {
 				<div id="sact_d3" class="vh50"></div>
 			</div>
 			<div class="col-lg-5 lborder">
-				<center>
 				<div id="sact_d4" class="vh50"></div>
-				</center>
+			</div>
+			<div class="text-center">
+				<i>Note: The size numbers are approximate only, since the size is taken from regular commits only.</i>
 			</div>
 		</div>
 		<div id="stype" class="tab-pane">
@@ -1120,6 +1120,9 @@ hr {
 			</div>
 			<div class="col-lg-6 lborder">
 				<div id="stype_d2" class="vh50"></div>
+			</div>
+			<div class="text-center">
+				<i>Note: The size numbers are approximate only, since the size is taken from regular commits only.</i>
 			</div>
 		</div>
 	</div>
