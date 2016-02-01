@@ -72,21 +72,21 @@
 				"/r/authors_summary?d=%m&dto=%tn",
 				[
 					[ 'Bubble', 'conact_d2',
-						function (data,month,tn) {
-							var min=max=data[0][3];
-							for (var i = 0; i < data.length; i++) {
-								if ( data[i][3] < min ) {
-									min = data[i][3];
+						function (t,month,tn) {
+							var min=max=t.getValue(0,3);
+							for (var i = 0; i < t.getNumberOfRows(); i++) {
+								if ( t.getValue(i,3) < min ) {
+									min = t.getValue(i,3);
 								}
-								if ( data[i][3] > max ) {
-									max = data[i][3];
+								if ( t.getValue(i,3) > max ) {
+									max = t.getValue(i,3);
 								}
 							}
 							return {
 									hAxis: {title: 'lines added'},
 									vAxis: {title: 'lines removed'},
 									title: month + tn + ' top commit contributors correlated with changed size and lines',
-									colors: get_red_green(min,max),
+									colors: fromRedToGren(min,max),
 									explorer: { maxZoomOut: 20 },
 									animation:{
 										 duration: 900,
@@ -355,8 +355,8 @@
 			return '#' + red.toString(16) + green + blue;
 	}
 
-	function get_red_green(min,max) {
-		var from,zero,to,base=255;
+	function fromRedToGren(min,max) {
+		var from,to,base=255;
 		if ( Math.abs(min) > Math.abs(max) ) {
 			from = "#ff0000";
 			abs_max=Math.abs(min);
@@ -378,7 +378,7 @@
 	function initMe() {
 		var tab=getUrlParameter('t');
 		if ( tab in Conf ) { S['tab']=tab; }
-		S['term']=parse_date(getUrlParameter('d'));
+		S['term']=parseDate(getUrlParameter('d'));
 		$("#when_opt").change(function() { refresh(S['term'],1); });
 		loadProjects();
 
@@ -429,7 +429,7 @@
 		var dat = new Date(), m = dat.getMonth()+1;
 		return dat.getFullYear() + (m < 10 ? '-0' : '-') + m;
 	}
-	function parse_date(term) {
+	function parseDate(term) {
 		if ( term == null ) { return thisMonth() }
 		return ( new Date(term).getFullYear() > 0 && term.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/)
 					&& term.match(/^(\d{4})-(\d{1,2})$/) )
@@ -543,7 +543,7 @@
 			return body;
 		}
 	}
-	function empty_data (header) {
+	function emptyData (header) {
 		var data =[['']];
 		for (i = 1; i < header[0].length; i++) {
 			data[0][i] = 0;
@@ -552,7 +552,7 @@
 	}
 
 	function metric2Data(jsonData,header,fields) {
-		if (jsonData.length == 0) return empty_data(header);
+		if (jsonData.length == 0) return emptyData(header);
 
 		return $.map(jsonData, function(n,i){
 				var row = new Array();
@@ -654,7 +654,7 @@
 		return [[header],stackData];
 	}
 
-	function init_graphs(actTID,Igrid) {
+	function initGraphs(actTID,Igrid) {
 		var gv = google.visualization;
 		var GST = new Array(); // reuse graph
 		for ( var i in Conf[actTID] ) {
@@ -684,60 +684,62 @@
 		return GST;
 	}
 
-	function drawDashboard(Project,term,excl_to) {
+	function prepareDataTable(report,data) {
+		var header, tData, transform = report[5];
+		if ( report[4] ) {
+			header = report[3];
+			tData = metric2Data(data, header, report[4]);
+		} else if ( "_stack" in report[2] ) {
+			var stacked = areaStacked(data);
+			header = stacked[0];
+			tData = stacked[1];
+		} else {
+			header = report[3];
+			tData = data.length == 0 ? emptyData(header) : data;
+		}
+		if ( transform ) { tData=transform(tData); }
+		return data2Table(header, tData, report[0]);
+	}
+	function drawDashboard(Project,term,skipTo) {
 		gv = google.visualization;
 		var Iurl = 0, Igrid = 1, actTID = S['tab'], month = term.toString().substring(0,7);
 		var till_now = getActiveOpts("when_opt") ? thisMonth() : '';
 		var tn = till_now ? ' - ' + till_now : '';
 
 		if ( GS[actTID] == undefined ) {
-			GS[actTID] = init_graphs(actTID,Igrid);
+			GS[actTID] = initGraphs(actTID,Igrid);
 		}
 
-		var g_idx=-1,data,transform,header,Data,url;
+		var repIdx=-1,data,url;
 		for ( var i in Conf[actTID] ) {
-			// FIXME - Data rename, reuse the variable
 			for ( var j in Conf[actTID][i][Igrid] ) {
-				g_idx++;
-				if ( excl_to && g_idx < excl_to ) {
+				repIdx++;
+				if ( skipTo && repIdx < skipTo ) {
 					continue;
 				}
 				if ( j == 0 ) {
-					Data = getData("/api/p/" + encodeURIComponent(Project)
+					data = getData("/api/p/" + encodeURIComponent(Project)
 							+ printf(Conf[actTID][i][Iurl],term,month,tn));
 				}
-				var report = Conf[actTID][i][Igrid][j], g_opts=report[2];
+				var report = Conf[actTID][i][Igrid][j], grOpts=report[2];
 				if ( report[0] == 'oneNumber' ) {
-					report[1](Data,report[2],month);
+					report[1](data,report[2],month);
 					break;
 				}
-				transform = report[5];
-				if ( report[4] ) {
-					header = report[3];
-					data = metric2Data(Data, header, report[4]);
-				} else if ( "_stack" in report[2] ) {
-					var stacked = areaStacked(Data);
-					header = stacked[0];
-					data = stacked[1];
-				} else {
-					header = report[3];
-					data = Data.length == 0 ? empty_data(header) : Data;
-				}
-				if ( transform ) { data=transform(data); }
-				var Table = data2Table(header, data, report[0]);
-				var chart=GS[actTID][g_idx];
+				var table = prepareDataTable(report,data);
+				var chart=GS[actTID][repIdx];
 				if ( report[6] ) {
-					report[6](chart,Table,g_idx);
+					report[6](chart,table,repIdx);
 				}
-				if (typeof g_opts === "function") {
-					g_opts=g_opts(data,month,tn);
+				if (typeof grOpts === "function") {
+					grOpts=grOpts(table,month,tn);
 				} else {
-					g_opts['title'] = printf(g_opts['_t'],term,month,tn);
+					grOpts['title'] = printf(grOpts['_t'],term,month,tn);
 				}
-				if (Data.length == 0) {
-					g_opts['title'] = g_opts['title'].replace(/(\d)[^\d]*$/g, "$1 no data" )
+				if (data.length == 0) {
+					grOpts['title'] = grOpts['title'].replace(/(\d)[^\d]*$/g, "$1 no data" )
 				}
-				chart.draw(Table, g_opts);
+				chart.draw(table, grOpts);
 			}
 		}
 	}
@@ -825,9 +827,9 @@
 		return 'github.com/' + url[1].substring(0, url[1].length - 1) + '/' + url[0];
 	}
 
-	function refresh(term,excl_to) {
+	function refresh(term,skipTo) {
 		var Project = getActiveProject();
-		drawDashboard(Project,term,excl_to);
+		drawDashboard(Project,term,skipTo);
 		$( "span#github_url" ).html( '<a class="btn btn-xs btn-default" href="https://' + getProjectGurl(Project,'')
 			+ '"><span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true">github</span></a>' );
 	}
