@@ -86,7 +86,7 @@
 								}
 							}
 							return {
-									hAxis: {title: 'lines added'},
+									hAxis: {title: 'lines added', scaleType: null},
 									vAxis: {title: 'lines removed', minValue: 0},
 									title: month + tn + ' top commit contributors correlated with changed size and lines',
 									colors: fromRedToGren(min,max),
@@ -387,6 +387,7 @@
 		if ( tab in Conf ) { S['tab']=tab; }
 		S['term']=parseDate(getUrlParameter('d'));
 		$("#when_opt").change(function() { refresh(S['term'],1); });
+		$("#log_opt").change(function() { refresh(S['term'],0); });
 		loadProjects();
 
 		$("#r"+S['tab']).tab('show');
@@ -731,6 +732,7 @@
 		gv = google.visualization;
 		var Iurl = 0, Igrid = 1, actTID = S['tab'], month = term.toString().substring(0,7);
 		var tn = $("#when_opt").prop("checked") ? ' - ' + thisMonth() : '';
+		var log = $("#log_opt").prop("checked") ? 'mirrorLog' : null;
 
 		if ( GS[actTID] == undefined ) {
 			GS[actTID] = initGraphs(actTID,Igrid);
@@ -761,6 +763,12 @@
 					grOpts=grOpts(table,month,tn);
 				} else {
 					grOpts['title'] = printf(grOpts['_t'],term,month,tn);
+				}
+				if ( 'vAxis' in grOpts ) {
+					grOpts['vAxis']['scaleType'] = log;
+				}
+				if ( 'hAxis' in grOpts && 'scaleType' in grOpts['hAxis'] ) {
+					grOpts['hAxis']['scaleType'] = log;
 				}
 				if (data.length == 0) {
 					grOpts['title'] = grOpts['title'].replace(/(\d)[^\d]*$/g, "$1 "
@@ -1012,8 +1020,10 @@ hr {
 			</li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right">
-			<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Some reports allow to change reporting period."><span id="cfg_time" class="glyphicon glyphicon-wrench" aria-hidden="true"></span> <b class="caret"></b></a>
+			<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"><span id="cfg_time" class="glyphicon glyphicon-wrench" aria-hidden="true"></span> <b class="caret"></b></a>
 				<ul class="dropdown-menu alert-dropdown">
+					<li><div class="radio"><label><input type="checkbox" id="log_opt"> boost small values</label></div>
+					</li>
 					<li><div class="radio"><label><input type="checkbox" id="when_opt"> report till today (<i><b>contributors</b> &#187; activity,top commiters</i> only)</label></div>
 					</li>
 				</ul>
