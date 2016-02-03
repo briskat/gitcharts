@@ -774,6 +774,11 @@
 					grOpts['title'] = grOpts['title'].replace(/(\d)[^\d]*$/g, "$1 "
 						+ (actTID === 'fmodfil' ? " no (significant) file changes" : " no activity/data"));
 				}
+				grOpts['titleTextStyle']= {
+					fontName: '"Segoe UI Light",serif',
+					fontSize: '21',
+					bold: false
+				}
 				chart.draw(table, grOpts);
 			}
 		}
@@ -951,6 +956,9 @@
 	background-repeat: no-repeat;
 	padding: 0px 0px 0px 60px;
 	margin: 0px 0px 0px 5px;
+}
+h1,h2,h3,h4,h5 {
+	font-family: 'Segoe UI Light',serif;
 }
 .vh25{ height: 29vh }
 .vh30{ height: 30vh }
