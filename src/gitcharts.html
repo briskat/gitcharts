@@ -395,11 +395,6 @@
 				var act = $(e.target).attr('href'); // Get the name of active tab
 				S['tab'] = act.substring(1, act.length);
 				$("#r"+S['tab']).tab('show');
-				if ( S['tab'] == 'conact' || S['tab'] == 'concom' ) {
-					$("#btntab0").show();
-				} else {
-					$("#btntab0").hide();
-				}
 				refresh(S['term']);
 			});
 		});
@@ -413,6 +408,8 @@
 		var base = window.location.href
 		if (base.indexOf("?")>-1){
 			base = base.substr(0,base.indexOf("?"));
+		} else if (base.indexOf("#")>-1){
+			base = base.substr(0,base.indexOf("#"));
 		}
 		return base + cUrl.substring(0, cUrl.length);
 	}
@@ -591,12 +588,6 @@
 		return dataTable;
 	}
 
-	function getActiveOpts (div) {
-		var e = document.getElementById(div);
-		var idx = e.selectedIndex < 0 ? 0 : e.selectedIndex;
-		return e.options[idx].value;
-	}
-
 	function fBytes(val) {
 		if ( Math.abs(val) > 1073741824 ) {
 			val = Math.round(val*10/1073741824)/10 + 'GB';
@@ -707,8 +698,7 @@
 	function drawDashboard(Project,term,skipTo) {
 		gv = google.visualization;
 		var Iurl = 0, Igrid = 1, actTID = S['tab'], month = term.toString().substring(0,7);
-		var till_now = getActiveOpts("when_opt") ? thisMonth() : '';
-		var tn = till_now ? ' - ' + till_now : '';
+		var tn = $("#when_opt").prop("checked") ? ' - ' + thisMonth() : '';
 
 		if ( GS[actTID] == undefined ) {
 			GS[actTID] = initGraphs(actTID,Igrid);
@@ -836,11 +826,16 @@
 	function refresh(term,skipTo) {
 		var Project = getActiveProject();
 		drawDashboard(Project,term,skipTo);
-		$( "span#github_url" ).html( '<a class="btn btn-xs btn-default" href="https://' + getProjectGurl(Project,'')
-			+ '"><span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true">github</span></a>' );
+		$( "#github_url" ).attr("href", 'https://' + getProjectGurl(Project,'') );
 	}
 </script>
 <style>
+.navbar-brand{
+	background-image: url('/a/logo.png');
+	background-repeat: no-repeat;
+	padding: 0px 0px 0px 60px;
+	margin: 0px 0px 0px 5px;
+}
 .vh25{ height: 27vh }
 .vh30{ height: 30vh }
 .vh50{ height: 55vh }
@@ -856,16 +851,18 @@ hr {
 <body style="padding: 56px 0px 0px 0px;">
 <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 	<div class="navbar-header">
-		<a href="http://www.briskat.com"><img src="/assets/logo-s.png"></a>
-		<select id="project_div" class="btn btn-success btn-default dropdown-toggle"></select>
+		<select id="project_div" class="btn btn-success btn-default dropdown-toggle" style="margin: 10px"></select>
 		<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
 			<span class="sr-only">Toggle navigation</span>
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
+		<a class="navbar-brand" href="http://www.briskat.com" title="briskat"> </a>
 	</div>
 	<div class="collapse navbar-collapse">
 		<ul class="nav navbar-nav">
+			<li><a href="http://goo.gl/forms/O40pmVc24k" title="Suggest a new repository for an addition."><span class="btn btn-success btn-xs glyphicon glyphicon-plus-sign" aria-hidden="true"></span></a>
+			</li>
 			<li class="dropdown">
 			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> commits<span class="caret"></span></a>
 			  <ul class="dropdown-menu">
@@ -901,29 +898,30 @@ hr {
 			  </ul>
 			</li>
 		</ul>
+		<ul class="nav navbar-nav navbar-right">
+			<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Some reports allow to change reporting period."><span id="cfg_time" class="glyphicon glyphicon-wrench" aria-hidden="true"></span> <b class="caret"></b></a>
+				<ul class="dropdown-menu alert-dropdown">
+					<li><div class="radio"><label><input type="checkbox" id="when_opt"> report till today (<i><b>contributors</b> &#187; activity,top commiters</i> only)</label></div>
+					</li>
+				</ul>
+			</li>
+			<li><a id="github_url" href="#" title="Show selected repository on GitHub"><span class="glyphicon glyphicon-circle-arrow-right" aria-hidden="true"></span></a>
+			</li>
+			<li><a href="https://github.com/briskat/gitcharts/issues/new" title="Report an issue">
+			<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a>
+			</li>
+			<li><a id="link_btn" href="#" title="Show link to current dashboard">
+			<span class="glyphicon glyphicon-link" aria-hidden="true"></span>
+			</a>
+			</li>
+			<li><a id="help_btn" href="http://www.briskat.com/gitcharts.html" title="Tutorial">
+			<span class="glyphicon glyphicon-question-sign text-success" aria-hidden="true" style="font-size: 125%"></span>
+			</a>
+			</li>
+			<li><a href="#"></a></li>
+		</ul>
 	</div>
 </div>
-	<div class="modal fade" id="mainHelp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-	  <div class="modal-dialog" role="document">
-		<div class="modal-content">
-		  <div class="modal-header">
-			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-			<h2 class="modal-title" id="myModalLabel">Gitcharts analytics</h2>
-				views changes in git repository. Contact us at <b>ask at briskat.com</b>.
-		  </div>
-		  <div class="modal-body text-left">
-					<p>Project data are refreshed from github repositories each hour.
-					Use green buttons to change project or select time period.
-					Click GitHub button (next to Project button) to view original project on GitHub. On commit pane click particular commit to view commit detail.
-					</p>
-		  </div>
-		  <div class="modal-footer">
-			<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		  </div>
-		</div>
-	  </div>
-	</div>
-
 	<div class="tab-content">
 		<div id="com_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
 		  <div class="modal-dialog modal-lg">
@@ -943,27 +941,6 @@ hr {
 			</div>
 		  </div>
 		</div>
-		<div class="col-lg-12 text-right">
-			<div class="btn-group" role="group" id="btntab0">
-					<select id="when_opt" class="btn btn-xs btn-success dropdown-toggle btn-block">
-						<optgroup label="Report period:">
-						<option value="">selected month</option>
-						<option value="now">all months till now</option>
-						</optgroup>
-					</select>
-			</div>
-			<span id="github_url"></span>
-			<a class="btn btn-xs btn-default" href="https://github.com/briskat/briskat.github.io/issues/new">
-			<span class="glyphicon glyphicon-pencil" aria-hidden="true">bug</span></a>
-			<button id="link_btn" type="button" class="btn btn-xs btn-default">
-			<span class="glyphicon glyphicon-link" aria-hidden="true"></span>
-			</button>
-			<button type="button" id="help_btn" class="btn btn-xs btn-default" data-toggle="modal" data-target="#mainHelp">
-			<span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span>
-			</button>
-		</div>
-		<p><br/></p>
-
 		<div id="cact" class="tab-pane">
 			<div id="cact_d1" class="vh30"></div>
 			<div class="col-lg-6 tborder">
