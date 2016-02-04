@@ -181,7 +181,13 @@
 			],
 			[
 				"/r/newcommers?d=%m",
-				[ [ 'oneNumber', newCommiters, [ "span#connew_d2" ] ] ]
+				[
+					[ 'Table', 'connew_d2', {_t:''}, [['Commit','Date','Name']],,
+						function (mydata) { var col1=order_alpha(1); mydata.sort(col1); return mydata },
+						commitListener
+					],
+					[ 'oneNumber', newCommiters, [ "span#connew_d3" ] ]
+				]
 			]
 		],
 		'lact' : [
@@ -572,14 +578,20 @@
 			});
 	}
 
-	function data2Table(header, data) {
-		// var dataTable = google.visualization.arrayToDataTable(header.concat(data));
-		var dataTable = new google.visualization.DataTable();
-		dataTable.addColumn('string', header[0][0]);
-		for (i = 1; i < header[0].length; i++) {
-			dataTable.addColumn('number',header[0][i]);
+	function data2Table(header, data, chart_type) {
+		var dataTable;
+		if ( chart_type == 'Table' ) {
+			dataTable = google.visualization.arrayToDataTable(header.concat(data));
+		} else {
+			// arrayToDataTable have problem if all row in column are
+			// null. Workaround is to set column type explicititly.
+			dataTable = new google.visualization.DataTable();
+			dataTable.addColumn('string', header[0][0]);
+			for (i = 1; i < header[0].length; i++) {
+				dataTable.addColumn('number',header[0][i]);
+			}
+			dataTable.addRows(data);
 		}
-		dataTable.addRows(data);
 		var formatter = new google.visualization.NumberFormat(
 			{ negativeColor: 'red', negativeParens: true, pattern: '###,###.#'});
 		for (i = 0; i < data[0].length; i++) {
@@ -616,19 +628,8 @@
 		$(span[0]).text(body[0][0] === "M" ? body[0][1].toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,') : body[1] ? body[1][1].toFixed(0).replace(/(\d)(?=(\d{3})+$)/g, '$1,') : '0');
 	}
 
-	function newCommiters(body,span) {
-		var authors="";
-		var url = 'https://' + getProjectGurl(getActiveProject()) + '/commit/';
-		var col=order_alpha(0);
-		body.sort(col);
-		for (i = 0; i < body.length; i++) {
-			authors = authors + body[i][0] +
-				( body[i][2]
-					? ', <a href="' + url + body[i][2]  + '">' + body[i][1] + '</a><br/>'
-					: ', ' + body[i][1] + '<br/>' );
-		}
-		$(span[0]).html( authors );
-		$( "span#date_ftc" ).text( S['term'] );
+	function newCommiters(body,span,month) {
+		$(span[0]).html( month );
 	}
 
 	function zeroes(cnt,type,zero) {
@@ -721,7 +722,7 @@
 				}
 				var report = Conf[actTID][i][Igrid][j], g_opts=report[2];
 				if ( report[0] == 'oneNumber' ) {
-					report[1](Data,report[2]);
+					report[1](Data,report[2],month);
 					break;
 				}
 				transform = report[5];
@@ -737,7 +738,7 @@
 					data = Data.length == 0 ? empty_data(header) : Data;
 				}
 				if ( transform ) { data=transform(data); }
-				var Table = data2Table(header, data);
+				var Table = data2Table(header, data, report[0]);
 				var chart=GS[actTID][g_idx];
 				if ( report[6] ) {
 					report[6](chart,Table,g_idx);
@@ -1062,8 +1063,8 @@ hr {
 		<div id="connew" class="tab-pane">
 			<div id="connew_d1" class="vh30"></div><hr/>
 			<div class="text-center vh50">
-					<h5><b><span id="date_ftc"></span>, first time contributors</b></h5>
-					<span id="connew_d2"></span>
+				<h5><b><span id="connew_d3"></span>, first time contributors</b></h5>
+				<center><div id="connew_d2"></div></center>
 			</div>
 		</div>
 
