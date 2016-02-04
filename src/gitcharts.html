@@ -35,21 +35,21 @@
 			[
 				"/r/commits_mo",
 				[
-					[ 'Area', 'commits_m_2_div', {_t: 'Commit activity',vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']],,, dateListener  ]
+					[ 'Area', 'cact_d1', {_t: 'Commit activity',vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']],,, dateListener  ]
 				]
 			],
 			[
 				"/r/commits_summary?d=%m",
 				[
-					[ 'Column', 'commits_div', {_t: 'Commits, %m', hAxis: _blank, isStacked: true}, [['date','regular','merge']],[1,2] ],
-					[ 'Area', 'size_div', {_t: 'Changed size, %m', hAxis: _blank }, [['date','bytes']], [3] ],
-					[ 'Area', 'lines_div', {_t: 'Lines, %m', hAxis: _blank,colors: ["green","red"] }, [['date','added','deleted']], [4,5] ]
+					[ 'Column', 'cact_d2', {_t: 'Commits, %m', hAxis: _blank, isStacked: true}, [['date','regular','merge']],[1,2] ],
+					[ 'Area', 'cact_d3', {_t: 'Changed size, %m', hAxis: _blank }, [['date','bytes']], [3] ],
+					[ 'Area', 'cact_d4', {_t: 'Lines, %m', hAxis: _blank,colors: ["green","red"] }, [['date','added','deleted']], [4,5] ]
 				]
 			],
 			[
 				"/r/files_summary?d=%m",
 				[
-					[ 'Area', 'files_div', {_t: 'Files, %m', hAxis: _blank, colors:["green","red","#3366CC"] }, [['Date','added','deleted','changed']],[1,2,3] ]
+					[ 'Area', 'cact_d5', {_t: 'Files, %m', hAxis: _blank, colors:["green","red","#3366CC"] }, [['Date','added','deleted','changed']],[1,2,3] ]
 				]
 			]
 		],
@@ -57,34 +57,34 @@
 			[
 				"/r/commits_mo",
 				[
-					[ 'Area', 'commits_m_0_div', {_t: 'Commit activity',vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']] ],
-					[ 'Area', 'commits_m_1_div', {_t:'Total commit activity', vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']],, run_sum ]
+					[ 'Area', 'csum_d7', {_t: 'Commit activity',vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']] ],
+					[ 'Area', 'csum_d8', {_t:'Total commit activity', vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']],, run_sum ]
 				]
 			],
 			[
 				"/r/summary",
-				[ [ 'oneNumber', tHeadSum, [ "span#sum_commits","span#sum_authors","span#sum_size","span#sum_files" ] ] ]
+				[ [ 'oneNumber', tHeadSum, [ "span#csum_d1","span#csum_d3","span#csum_d5","span#csum_d6" ] ] ]
 			],
 			[
 				"/r/commits_comtype",
-				[ [ 'oneNumber', tMerge, [ "span#merge_commits" ] ] ]
+				[ [ 'oneNumber', tMerge, [ "span#csum_d2" ] ] ]
 			],
 			[
 				"/r/authors_comtype",
-				[ [ 'oneNumber', tMerge, [ "span#merge_authors" ] ] ]
+				[ [ 'oneNumber', tMerge, [ "span#csum_d4" ] ] ]
 			]
 		],
 		'conact' : [
 			[
 				"/r/commit_authors",
 				[
-					[ 'Area', 'commiters_y_div0', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
+					[ 'Area', 'conact_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
 				]
 			],
 			[
 				"/r/authors_summary?d=%m&dto=%tn",
 				[
-					[ 'Bubble', 'commiters_div',
+					[ 'Bubble', 'conact_d2',
 						function (data,month,tn) {
 							var min=max=data[0][3];
 							for (var i = 0; i < data.length; i++) {
@@ -116,13 +116,13 @@
 			[
 				"/r/commit_authors",
 				[
-					[ 'Area', 'commiters_y_div1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
+					[ 'Area', 'concom_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
 				]
 			],
 			[
 				"/r/authors_rcommits?d=%m&dto=%tn",
 				[
-					[ 'Pie', 'rcommit_chart_div', {_t : '%m%tn regular commit contributors' },
+					[ 'Pie', 'concom_d2', {_t : '%m%tn regular commit contributors' },
 						[['Contributor','regular commits']],,
 						function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata }
 					]
@@ -131,7 +131,7 @@
 			[
 				"/r/authors_mcommits?d=%m&dto=%tn",
 				[
-					[ 'Pie', 'mcommit_chart_div', {_t : '%m%tn merge commit contributors' },
+					[ 'Pie', 'concom_d3', {_t : '%m%tn merge commit contributors' },
 						[['Contributor','merge commits']],,
 						function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata }
 					]
@@ -142,13 +142,13 @@
 			[
 				"/r/commit_authors",
 				[
-					[ 'Area', 'commiters_y_div3', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
+					[ 'Area', 'conlin_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
 				]
 			],
 			[
 				"/r/authors_lines?d=%m",
 				[
-					[ 'Column', 'author_lines', {_t: '%m top contributors by total no. of changed lines', colors:["green","red"] },
+					[ 'Column', 'conlin_d2', {_t: '%m top contributors by total no. of changed lines', colors:["green","red"] },
 						[['Contributor','lines added','lines deleted']],,
 						function (mydata) { mydata.sort(order_2valsum); return chop(mydata,8) }
 					]
@@ -159,14 +159,14 @@
 			[
 				"/r/commit_authors",
 				[
-					[ 'Area', 'commiters_y_div2', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
+					[ 'Area', 'conaut_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
 				]
 			],
 			[
 				"/r/authors_size?d=%m",
 				[
-					[ 'Column', 'commit_size_div', {_t: '%m top contributors by size changed' },
-						[['Contributor','Bytes']],,
+					[ 'Column', 'conaut_d2', {_t: '%m top contributors by size changed' },
+						[['contributor','bytes']],,
 						function (mydata) { mydata.sort(order_abs); return chop(mydata,12) }
 					]
 				]
@@ -176,31 +176,31 @@
 			[
 				"/r/newcommers_mo",
 				[
-					[ 'Area', 'commiters_y_div', {_t: 'Contributors and newcommers'}, [['Date','contributors','new contributors']],,, dateListener ]
+					[ 'Area', 'connew_d1', {_t: 'Contributors and newcomers', colors: ["purple","sienna"]}, [['Date','contributors','newcomers']],,, dateListener ]
 				]
 			],
 			[
 				"/r/newcommers?d=%m",
-				[ [ 'oneNumber', newCommiters, [ "span#new_authors" ] ] ]
+				[ [ 'oneNumber', newCommiters, [ "span#connew_d2" ] ] ]
 			]
 		],
 		'lact' : [
 			[
 				"/r/lines_mo",
 				[
-					[ 'Area', 'lines_mo_div', {_t: 'Line additions, removals', colors:["green","red"], vAxis: {minValue: 0}}, [['Date','lines added', 'lines deleted']],,, dateListener ]
+					[ 'Area', 'lact_d1', {_t: 'Line additions, removals', colors:["green","red"], vAxis: {minValue: 0}}, [['Date','lines added', 'lines deleted']],,, dateListener ]
 				]
 			],
 			[
 				"/r/lines_date?d=%m",
 				[
-					[ 'Column', 'lines_days_div', {_t: '%m line additions, removals', colors:["green","red"], hAxis: _blank}, [['Date','lines added', 'lines deleted']],,, dateListener ],
+					[ 'Column', 'lact_d2', {_t: '%m line additions, removals', colors:["green","red"], hAxis: _blank}, [['Date','lines added', 'lines deleted']],,, dateListener ],
 				]
 			],
 			[
 				"/r/lines_commit?d=%d",
 				[
-					[ 'Column', 'lines_commit_div',
+					[ 'Column', 'lact_d3',
 						{_t : '%d top commits by total changed lines', colors:["green","red"]  },
 						[['commit','lines added', 'lines deleted']],
 						,
@@ -214,20 +214,20 @@
 			[
 				"/r/files_added_mo",
 				[
-					[ 'Area', 'files_a_0_div', {_t:'File addition activity', colors:["green","red"]}, [['Date','files added','files deleted']],,, dateListener1 ],
-					[ 'Area', 'files_a_1_div', {_t:'Total files'}, [['Date','total files']],, run_sum_files, dateListener ]
+					[ 'Area', 'fact_d1', {_t:'File addition activity', colors:["green","red"]}, [['Date','files added','files deleted']],,, dateListener1 ],
+					[ 'Area', 'fact_d2', {_t:'Total files'}, [['Date','total files']],, run_sum_files, dateListener ]
 				]
 			],
 			[
 				"/r/files_added_date?d=%m",
 				[
-					[ 'Column', 'det_files_a_div', {_t: '%m file additions, removals', colors:["green","red"], hAxis: _blank }, [['Date','added files','deleted files']],,, dateListener ],
+					[ 'Column', 'fact_d3', {_t: '%m file additions, removals', colors:["green","red"], hAxis: _blank }, [['Date','added files','deleted files']],,, dateListener ],
 				]
 			],
 			[
 				"/r/files_added_commit?d=%d",
 				[
-					[ 'Column', 'files_a_commit_div',
+					[ 'Column', 'fact_d4',
 						{_t : '%d top commits by file additions', colors:["green","red"]  },
 						[['commit','added files','deleted files']],
 						,
@@ -241,19 +241,19 @@
 			[
 				"/r/files_changed_mo",
 				[
-					[ 'Area', 'files_m_0_div', {_t: 'Changed files', vAxis: {minValue: 0}}, [['Date','changed files']],,, dateListener ]
+					[ 'Area', 'fmodcom_d1', {_t: 'Changed files', vAxis: {minValue: 0}}, [['Date','changed files']],,, dateListener ]
 				]
 			],
 			[
 				"/r/files_changed_date?d=%m",
 				[
-					[ 'Area', 'det_files_m_0_div', {_t: '%m changed files', hAxis: _blank}, [['Date','changed files']],,, dateListener ],
+					[ 'Area', 'fmodcom_d2', {_t: '%m changed files', hAxis: _blank}, [['Date','changed files']],,, dateListener ],
 				]
 			],
 			[
 				"/r/files_changed_commit?d=%d",
 				[
-					[ 'Column', 'files_m_commit_div',
+					[ 'Column', 'fmodcom_d3',
 						{_t : '%d top commits by changed files'  },
 						[['commit','changed files']],
 						,
@@ -267,19 +267,19 @@
 			[
 				"/r/files_changed_mo",
 				[
-					[ 'Area', 'files_m_1_div', {_t: 'Changed files', vAxis: {minValue: 0}}, [['Date','changed files']],,, dateListener ]
+					[ 'Area', 'fmodfil_d1', {_t: 'Changed files', vAxis: {minValue: 0}}, [['Date','changed files']],,, dateListener ]
 				]
 			],
 			[
 				"/r/files_changed_date?d=%m",
 				[
-					[ 'Area', 'det_files_m_1_div', {_t: '%d changed files', hAxis: _blank}, [['Date','changed files']],,, dateListener ],
+					[ 'Area', 'fmodfil_d2', {_t: '%m changed files', hAxis: _blank}, [['Date','changed files']],,, dateListener ],
 				]
 			],
 			[
 				"/r/files_changed?d=%d",
 				[
-					[ 'Column', 'files_changes_div',
+					[ 'Column', 'fmodfil_d3',
 						{_t : '%m most changed files'  },
 						[['file name','no. of changes']],
 						,
@@ -292,22 +292,22 @@
 			[
 				"/r/size_mo",
 				[
-					[ 'Area', 'month_size_0_div', {_t:'Changed size'}, [['Date','Bytes']],,, dateListener1 ],
-					[ 'Area', 'month_size_1_div', {_t:'Total size'}, [['Date','Bytes']],, run_sum, dateListener ]
+					[ 'Area', 'sact_d1', {_t:'Changed size'}, [['Date','bytes']],,, dateListener1 ],
+					[ 'Area', 'sact_d2', {_t:'Total size'}, [['Date','bytes']],, run_sum, dateListener ]
 				]
 			],
 			[
 				"/r/size_date?d=%m",
 				[
-					[ 'Area', 'det_month_ft_size_div', {_t: 'Changed size, %m', hAxis: _blank}, [['Date','Size']],,, dateListener ],
+					[ 'Area', 'sact_d3', {_t: 'Changed size, %m', hAxis: _blank}, [['Date','bytes']],,, dateListener ],
 				]
 			],
 			[
 				"/r/size_commit?d=%d",
 				[
-					[ 'Table' , 'big_commit_div',
-						{_t : '%d top commits by size' },
-						[['Commit','Size']],
+					[ 'Column' , 'sact_d4',
+						{_t : '%d top commits by bytes changed' },
+						[['Commit','bytes']],
 						,
 						function (mydata) { mydata.sort(order_abs); return chop(mydata,12) },
 						commitListener
@@ -319,20 +319,20 @@
 			[
 				"/r/size_yr_ft",
 				[
-					[ 'Area', 'yr_ft_size_div', {_t: 'Size in bytes by file type', isStacked : true, _stack: 1 },,,run_sum ]
+					[ 'Area', 'stype_d1', {_t: 'Size in bytes by file type', isStacked : true, _stack: 1 },,,run_sum ]
 				]
 			],
 			[
 				"/r/size_suffix",
 				[
-					[ 'Pie', 'ext_size_div',{_t: 'Approximate total size in bytes by file extension'}, [['Suffix','Size']],,
+					[ 'Pie', 'stype_d2',{_t: 'Approximate total size in bytes by file extension'}, [['Suffix','bytes']],,
 						function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata } ]
 				]
 			],
 			[
 				"/r/size_ft",
 				[
-					[ 'Pie', 'ft_size_div',{_t: 'Approximate total size in bytes by file type', hAxis: _blank}, [['File Type','Size']],,
+					[ 'Pie', 'stype_d3',{_t: 'Approximate total size in bytes by file type', hAxis: _blank}, [['File Type','bytes']],,
 						function (mydata) { var col1=order_by_col(1);mydata.sort(col1); return mydata } ]
 				]
 			]
@@ -973,21 +973,21 @@ hr {
 		<p><br/></p>
 
 		<div id="cact" class="tab-pane">
-			<div id="commits_m_2_div" class="vh30"></div>
+			<div id="cact_d1" class="vh30"></div>
 			<div class="col-lg-6 tborder">
-				<br/><div id="commits_div" class="vh25"></div>
+				<br/><div id="cact_d2" class="vh25"></div>
 			</div>
 			<div class="col-lg-6 tborder text-right">
 				<a data-toggle="tab" href="#sact"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>
-				<div id="size_div" class="vh25"></div>
+				<div id="cact_d3" class="vh25"></div>
 			</div>
 			<div class="col-lg-6 lborder text-right">
 				<a data-toggle="tab" href="#fact"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>
-				<div id="files_div" class="vh25"></div>
+				<div id="cact_d5" class="vh25"></div>
 			</div>
 			<div class="col-lg-6 lborder text-right">
 				<a data-toggle="tab" href="#lact"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>
-				<div id="lines_div" class="vh25"></div>
+				<div id="cact_d4" class="vh25"></div>
 			</div>
 		</div>
 
@@ -995,8 +995,8 @@ hr {
 			<div class="col-lg-3">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h2><span id="sum_commits"></span> <small>commits</small></h2>
-						( <b><span id="merge_commits"></span></b> merge commits )
+						<h2><span id="csum_d1"></span> <small>commits</small></h2>
+						( <b><span id="csum_d2"></span></b> merge commits )
 						&nbsp;&nbsp;<a data-toggle="tab" href="#cact"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>
 					</div>
 				</div>
@@ -1005,8 +1005,8 @@ hr {
 			<div class="col-lg-3">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h2><span id="sum_authors"></span> <small>contributors</small></h2>
-						( <b><span id="merge_authors"></span></b> mergers )
+						<h2><span id="csum_d3"></span> <small>contributors</small></h2>
+						( <b><span id="csum_d4"></span></b> mergers )
 						&nbsp;&nbsp;<a data-toggle="tab" href="#conact"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>
 					</div>
 				</div>
@@ -1015,7 +1015,7 @@ hr {
 			<div class="col-lg-3">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h2>~<span id="sum_files"></span> <small>files</small></h2>
+						<h2>~<span id="csum_d5"></span></h2>
 						<a data-toggle="tab" href="#fact"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>
 					</div>
 				</div>
@@ -1024,115 +1024,115 @@ hr {
 			<div class="col-lg-3">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h2>~<span id="sum_size"></span></h2>
+						<h2>~<span id="csum_d6"></span> <small>files</small></h2>
 						<a data-toggle="tab" href="#sact"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span></a>
 					</div>
 				</div>
 			</div>
 
 			<div class="col-lg-12">
-				<div id="commits_m_0_div" class="vh33"></div><hr/>
+				<div id="csum_d7" class="vh33"></div><hr/>
 			</div>
 			<div class="col-lg-12">
-				<div id="commits_m_1_div" class="vh33"></div><hr/>
+				<div id="csum_d8" class="vh33"></div><hr/>
 			</div>
 		</div>
 
 		<div id="conact" class="tab-pane">
-			<div id="commiters_y_div0" class="vh30"></div><hr/>
-			<div id="commiters_div" class="vh50"></div>
+			<div id="conact_d1" class="vh30"></div><hr/>
+			<div id="conact_d2" class="vh50"></div>
 		</div>
 		<div id="concom" class="tab-pane">
-			<div id="commiters_y_div1" class="vh30"></div><br/>
+			<div id="concom_d1" class="vh30"></div><br/>
 			<div class="col-lg-6 lborder">
-				<div id="rcommit_chart_div" class="vh50"></div>
+				<div id="concom_d2" class="vh50"></div>
 			</div>
 			<div class="col-lg-6 lborder">
-				<div id="mcommit_chart_div" class="vh50"></div>
+				<div id="concom_d3" class="vh50"></div>
 			</div>
 		</div>
 		<div id="conlin" class="tab-pane">
-			<div id="commiters_y_div3" class="vh30"></div><hr/>
-			<div id="author_lines" class="vh50"></div>
+			<div id="conlin_d1" class="vh30"></div><hr/>
+			<div id="conlin_d2" class="vh50"></div>
 		</div>
 		<div id="conaut" class="tab-pane">
-			<div id="commiters_y_div2" class="vh30"></div><hr/>
-			<div id="commit_size_div" class="vh50"></div>
+			<div id="conaut_d1" class="vh30"></div><hr/>
+			<div id="conaut_d2" class="vh50"></div>
 		</div>
 		<div id="connew" class="tab-pane">
-			<div id="commiters_y_div" class="vh30"></div><hr/>
+			<div id="connew_d1" class="vh30"></div><hr/>
 			<div class="text-center vh50">
 					<h5><b><span id="date_ftc"></span>, first time contributors</b></h5>
-					<span id="new_authors"></span>
+					<span id="connew_d2"></span>
 			</div>
 		</div>
 
 		<div id="lact" class="tab-pane">
-			<div id="lines_mo_div" class="vh30"></div><br/>
+			<div id="lact_d1" class="vh30"></div><br/>
 			<div class="col-lg-7 lborder">
-				<div id="lines_days_div" class="vh50"></div>
+				<div id="lact_d2" class="vh50"></div>
 			</div>
 			<div class="col-lg-5 lborder">
-				<div id="lines_commit_div" class="vh50"></div>
+				<div id="lact_d3" class="vh50"></div>
 			</div>
 		</div>
 
 		<div id="fact" class="tab-pane">
 			<div class="col-lg-7 tborder">
-				<div id="files_a_0_div" class="vh30"></div>
+				<div id="fact_d1" class="vh30"></div>
 			</div>
 			<div class="col-lg-5 tborder">
-				<div id="files_a_1_div" class="vh30"></div>
+				<div id="fact_d2" class="vh30"></div>
 			</div>
 			<div class="col-lg-7 lborder">
-				<div id="det_files_a_div" class="vh50"></div>
+				<div id="fact_d3" class="vh50"></div>
 			</div>
 			<div class="col-lg-5 lborder">
-				<div id="files_a_commit_div" class="vh50"></div>
+				<div id="fact_d4" class="vh50"></div>
 			</div>
 		</div>
 		<div id="fmodcom" class="tab-pane">
-			<div id="files_m_0_div" class="vh30"></div><br/>
+			<div id="fmodcom_d1" class="vh30"></div><br/>
 			<div class="col-lg-7 lborder">
-				<div id="det_files_m_0_div" class="vh50"></div>
+				<div id="fmodcom_d2" class="vh50"></div>
 			</div>
 			<div class="col-lg-5 lborder">
-				<div id="files_m_commit_div" class="vh50"></div>
+				<div id="fmodcom_d3" class="vh50"></div>
 			</div>
 		</div>
 		<div id="fmodfil" class="tab-pane">
-			<div id="files_m_1_div" class="vh30"></div><br/>
+			<div id="fmodfil_d1" class="vh30"></div><br/>
 			<div class="col-lg-7 lborder">
-				<div id="det_files_m_1_div" class="vh50"></div>
+				<div id="fmodfil_d2" class="vh50"></div>
 			</div>
 			<div class="col-lg-5 lborder">
-				<div id="files_changes_div" class="vh50"></div>
+				<div id="fmodfil_d3" class="vh50"></div>
 			</div>
 		</div>
 
 		<div id="sact" class="tab-pane">
 			<div class="col-lg-7 tborder">
-				<div id="month_size_0_div" class="vh30"></div>
+				<div id="sact_d1" class="vh30"></div>
 			</div>
 			<div class="col-lg-5 tborder">
-				<div id="month_size_1_div" class="vh30"></div>
+				<div id="sact_d2" class="vh30"></div>
 			</div>
 			<div class="col-lg-7 lborder">
-				<div id="det_month_ft_size_div" class="vh50"></div>
+				<div id="sact_d3" class="vh50"></div>
 			</div>
 			<div class="col-lg-5 lborder">
 				<center>
-				<div id="big_commit_div" class="vh50"></div>
+				<div id="sact_d4" class="vh50"></div>
 				</center>
 			</div>
 		</div>
 		<div id="stype" class="tab-pane">
-			<div id="yr_ft_size_div" class="vh30"></div><br/>
+			<div id="stype_d1" class="vh30"></div><br/>
 			<div class="col-lg-6 lborder">
-				<div id="ft_size_div" class="vh50"></div>
+				<div id="stype_d3" class="vh50"></div>
 			</div>
 			<div class="col-lg-6 lborder">
-				<div id="ext_size_div" class="vh50"></div>
+				<div id="stype_d2" class="vh50"></div>
 			</div>
 		</div>
 	</div>
