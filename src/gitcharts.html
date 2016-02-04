@@ -176,9 +176,9 @@
 			[
 				"/r/newcomers?d=%m",
 				[
-					[ 'Table', 'connew_d2', {_t:''}, [['Commit','Date','Name']],,
-						function (mydata) { var col1=order_alpha(1); mydata.sort(col1); return stringify(mydata) },
-						commitListener
+					[ 'Table', 'connew_d2', {_t:''}, [['Name','Date']],,
+						function (mydata) { var col1=order_alpha(1); mydata.sort(col1); return mydata },
+						authorListener
 					],
 					[ 'oneNumber', newCommiters, [ "span#connew_d3" ] ]
 				]
