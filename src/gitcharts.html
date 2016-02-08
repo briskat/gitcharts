@@ -453,11 +453,16 @@
 		var jsonData = getData("/api/p/");
 		var options = $("#project_div");
 		var proj=getUrlParameter('proj');
+		var label;
 		$.each(jsonData['projects'], function() {
-			if ( this.name == proj ) {
-				options.append($("<option selected/>").val(this.name).text(this.name));
+			label = this;
+			if ( label.length > 22 ) {
+				label = label.substring(0,20) + '...';
+			}
+			if ( this == proj ) {
+				options.append($("<option selected/>").val(this).text(label));
 			} else {
-				options.append($("<option />").val(this.name).text(this.name));
+				options.append($("<option />").val(this).text(label));
 			}
 		});
 	}
