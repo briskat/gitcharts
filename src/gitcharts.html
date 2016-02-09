@@ -25,14 +25,13 @@
 	google.setOnLoadCallback(initMe);
 
 	var GS = new Array(); // reuse graph
-	var S = { tab : 1,
+	var S = { tab : 'cact',
 			term : thisMonth()
 		};
 
 	var _blank = {textPosition : "none"};
-	// FIXME: array -> hash (for tabs)
-	var Conf = [
-		[
+	var Conf = {
+		'cact' : [
 			[
 				"/r/commits_mo",
 				[
@@ -54,7 +53,7 @@
 				]
 			]
 		],
-		[
+		'csum' : [
 			[
 				"/r/commit_authors",
 				[
@@ -75,7 +74,7 @@
 				[ [ 'oneNumber', tMerge, [ "span#merge_authors" ] ] ]
 			]
 		],
-		[
+		'conact' : [
 			[
 				"/r/commit_authors",
 				[
@@ -113,7 +112,7 @@
 				]
 			]
 		],
-		[
+		'concom' : [
 			[
 				"/r/commit_authors",
 				[
@@ -139,7 +138,7 @@
 				]
 			]
 		],
-		[
+		'conlin' : [
 			[
 				"/r/commit_authors",
 				[
@@ -156,7 +155,7 @@
 				]
 			]
 		],
-		[
+		'conaut' : [
 			[
 				"/r/commit_authors",
 				[
@@ -185,7 +184,7 @@
 				[ [ 'oneNumber', newCommiters, [ "span#new_authors" ] ] ]
 			]
 		],
-		[
+		'lact' : [
 			[
 				"/r/lines_mo",
 				[
@@ -211,7 +210,7 @@
 				]
 			]
 		],
-		[
+		'fact' : [
 			[
 				"/r/files_added_mo",
 				[
@@ -238,7 +237,7 @@
 				]
 			]
 		],
-		[
+		'fmodcom' : [
 			[
 				"/r/files_changed_mo",
 				[
@@ -264,7 +263,7 @@
 				]
 			]
 		],
-		[
+		'fmodfil' : [
 			[
 				"/r/files_changed_mo",
 				[
@@ -289,7 +288,7 @@
 				],
 			]
 		],
-		[
+		'sact' : [
 			[
 				"/r/size_mo",
 				[
@@ -316,7 +315,7 @@
 				],
 			]
 		],
-		[
+		'stype' : [
 			[
 				"/r/size_yr_ft",
 				[
@@ -338,7 +337,7 @@
 				]
 			]
 		]
-	];
+	};
 
 	function rgb(ratio,base) {
 			var red,green,blue;
@@ -384,13 +383,13 @@
 	}
 
 	function initMe() {
-		var tab=parseInt(getUrlParameter('t'));
-		if (tab > 1 && tab < 13) { S['tab']=tab; }
+		var tab=getUrlParameter('t');
+		if ( tab in Conf ) { S['tab']=tab; }
 		S['term']=parse_date(getUrlParameter('d'));
 		$("#when_opt").change(function() { refresh(S['term'],1); });
 		loadProjects();
 
-		$("#rep"+S['tab']).tab('show');
+		$("#r"+S['tab']).tab('show');
 		$(window).resize(function(){ refresh(S['term']); });
 		$("#project_div").change(function() { refresh(S['term']); });
 		$("#link_btn").click(function() { prompt('Paste current URL', getCurUrl()) });
@@ -400,8 +399,8 @@
 		$(document).ready(function(){
 			$('a[data-toggle="tab"]').on('shown.bs.tab', function(e){
 				var act = $(e.target).attr('href'); // Get the name of active tab
-				S['tab'] = act.substring(4, act.length);
-				if (S['tab'] > 2 && S['tab'] < 5) {
+				S['tab'] = act.substring(1, act.length);
+				if ( S['tab'] == 'conact' || S['tab'] == 'concom' ) {
 					$("#btntab0").show();
 					$("#btntab1").show();
 				} else {
@@ -699,7 +698,7 @@
 
 	function drawDashboard(Project,term,excl_to) {
 		gv = google.visualization;
-		var Iurl = 0, Igrid = 1, actTID = S['tab']-1, month = term.toString().substring(0,7);
+		var Iurl = 0, Igrid = 1, actTID = S['tab'], month = term.toString().substring(0,7);
 		var till_now = getActiveOpts("when_opt") ? thisMonth() : '';
 		var tn = till_now ? ' - ' + till_now : '';
 
@@ -877,35 +876,35 @@ hr {
 			<li class="dropdown">
 			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> commits<span class="caret"></span></a>
 			  <ul class="dropdown-menu">
-				<li><a data-toggle="tab" href="#tab1" id="rep1"> activity</a></li>
-				<li><a data-toggle="tab" href="#tab2" id="rep2"> repo summary</a></li>
+				<li><a data-toggle="tab" href="#cact" id="rcact"> activity</a></li>
+				<li><a data-toggle="tab" href="#csum" id="rcsum"> summary</a></li>
 			  </ul>
 			</li>
 			<li class="dropdown">
 			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> contributors<span class="caret"></span></a>
 			  <ul class="dropdown-menu">
-				<li><a data-toggle="tab" href="#tab3" id="rep3"> activity</a></li>
-				<li><a data-toggle="tab" href="#tab4" id="rep4"> top commiters</a></li>
-				<li><a data-toggle="tab" href="#tab5" id="rep5"> top line changers</a></li>
-				<li><a data-toggle="tab" href="#tab6" id="rep6"> top size changers</a></li>
+				<li><a data-toggle="tab" href="#conact" id="rconact"> activity</a></li>
+				<li><a data-toggle="tab" href="#concom" id="rconcom"> top commiters</a></li>
+				<li><a data-toggle="tab" href="#conlin" id="rconlin"> top line changers</a></li>
+				<li><a data-toggle="tab" href="#conaut" id="rconaut"> top size changers</a></li>
 				<li role="separator" class="divider"></li>
-				<li><a data-toggle="tab" href="#tab7" id="rep7"> newcomers</a></li>
+				<li><a data-toggle="tab" href="#connew" id="rconnew"> newcomers</a></li>
 			  </ul>
 			</li>
-			<li><a data-toggle="tab" href="#tab8" id="rep8"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> lines</a></li>
+			<li><a data-toggle="tab" href="#lact" id="rlact"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> lines</a></li>
 			<li class="dropdown">
 			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-file" aria-hidden="true"></span> file<span class="caret"></span></a>
 			  <ul class="dropdown-menu">
-				<li><a data-toggle="tab" href="#tab9" id="rep9"> activity</a></li>
-				<li><a data-toggle="tab" href="#tab10" id="rep10"> commits changing most files</a></li>
-				<li><a data-toggle="tab" href="#tab11" id="rep11"> most changed files</a></li>
+				<li><a data-toggle="tab" href="#fact" id="rfact"> activity</a></li>
+				<li><a data-toggle="tab" href="#fmodcom" id="rfmodcom"> commits changing most files</a></li>
+				<li><a data-toggle="tab" href="#fmodfil" id="rfmodfil"> most changed files</a></li>
 			  </ul>
 			</li>
 			<li class="dropdown">
 			  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-cd" aria-hidden="true"></span> size<span class="caret"></span></a>
 			  <ul class="dropdown-menu">
-				<li><a data-toggle="tab" href="#tab12" id="rep12"> activity</a></li>
-				<li><a data-toggle="tab" href="#tab13" id="rep13"> by extension</a></li>
+				<li><a data-toggle="tab" href="#sact" id="rsact"> activity</a></li>
+				<li><a data-toggle="tab" href="#stype" id="rstype"> by extension</a></li>
 			  </ul>
 			</li>
 		</ul>
@@ -971,7 +970,7 @@ hr {
 		</div>
 		<p><br/></p>
 
-		<div id="tab1" class="tab-pane">
+		<div id="cact" class="tab-pane">
 			<div id="commits_m_2_div" class="vh30"></div>
 			<div class="col-lg-6 tborder">
 				<div id="commits_div" class="vh30"></div>
@@ -987,7 +986,7 @@ hr {
 			</div>
 		</div>
 
-		<div id="tab2" class="tab-pane text-center">
+		<div id="csum" class="tab-pane text-center">
 			<div class="col-lg-3">
 				<div class="panel panel-default">
 					<div class="panel-heading">
@@ -1030,11 +1029,11 @@ hr {
 			</div>
 		</div>
 
-		<div id="tab3" class="tab-pane">
+		<div id="conact" class="tab-pane">
 			<div id="commiters_y_div0" class="vh30"></div><hr/>
 			<div id="commiters_div" class="vh50"></div>
 		</div>
-		<div id="tab4" class="tab-pane">
+		<div id="concom" class="tab-pane">
 			<div id="commiters_y_div1" class="vh30"></div><br/>
 			<div class="col-lg-6 lborder">
 				<div id="rcommit_chart_div" class="vh50"></div>
@@ -1043,15 +1042,15 @@ hr {
 				<div id="mcommit_chart_div" class="vh50"></div>
 			</div>
 		</div>
-		<div id="tab5" class="tab-pane">
+		<div id="conlin" class="tab-pane">
 			<div id="commiters_y_div3" class="vh30"></div><hr/>
 			<div id="author_lines" class="vh50"></div>
 		</div>
-		<div id="tab6" class="tab-pane">
+		<div id="conaut" class="tab-pane">
 			<div id="commiters_y_div2" class="vh30"></div><hr/>
 			<div id="commit_size_div" class="vh50"></div>
 		</div>
-		<div id="tab7" class="tab-pane">
+		<div id="connew" class="tab-pane">
 			<div id="commiters_y_div" class="vh30"></div><hr/>
 			<div class="text-center vh50">
 					<h5><b><span id="date_ftc"></span>, first time contributors</b></h5>
@@ -1059,7 +1058,7 @@ hr {
 			</div>
 		</div>
 
-		<div id="tab8" class="tab-pane">
+		<div id="lact" class="tab-pane">
 			<div id="lines_mo_div" class="vh30"></div><br/>
 			<div class="col-lg-7 lborder">
 				<div id="lines_days_div" class="vh50"></div>
@@ -1069,7 +1068,7 @@ hr {
 			</div>
 		</div>
 
-		<div id="tab9" class="tab-pane">
+		<div id="fact" class="tab-pane">
 			<div class="col-lg-7 tborder">
 				<div id="files_a_0_div" class="vh30"></div>
 			</div>
@@ -1083,7 +1082,7 @@ hr {
 				<div id="files_a_commit_div" class="vh50"></div>
 			</div>
 		</div>
-		<div id="tab10" class="tab-pane">
+		<div id="fmodcom" class="tab-pane">
 			<div id="files_m_0_div" class="vh30"></div><br/>
 			<div class="col-lg-7 lborder">
 				<div id="det_files_m_0_div" class="vh50"></div>
@@ -1092,7 +1091,7 @@ hr {
 				<div id="files_m_commit_div" class="vh50"></div>
 			</div>
 		</div>
-		<div id="tab11" class="tab-pane">
+		<div id="fmodfil" class="tab-pane">
 			<div id="files_m_1_div" class="vh30"></div><br/>
 			<div class="col-lg-7 lborder">
 				<div id="det_files_m_1_div" class="vh50"></div>
@@ -1102,7 +1101,7 @@ hr {
 			</div>
 		</div>
 
-		<div id="tab12" class="tab-pane">
+		<div id="sact" class="tab-pane">
 			<div class="col-lg-7 tborder">
 				<div id="month_size_0_div" class="vh30"></div>
 			</div>
@@ -1118,7 +1117,7 @@ hr {
 				</center>
 			</div>
 		</div>
-		<div id="tab13" class="tab-pane">
+		<div id="stype" class="tab-pane">
 			<div id="yr_ft_size_div" class="vh30"></div><br/>
 			<div class="col-lg-6 lborder">
 				<div id="ft_size_div" class="vh50"></div>
