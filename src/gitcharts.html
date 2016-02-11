@@ -386,6 +386,7 @@
 		var tab=getUrlParameter('t');
 		if ( tab in Conf ) { S['tab']=tab; }
 		S['term']=parseDate(getUrlParameter('d'));
+		setCheckBoxes();
 		$("#when_opt").change(function() { refresh(S['term'],1); });
 		$("#log_opt").change(function() { refresh(S['term'],0); });
 		loadProjects();
@@ -419,6 +420,16 @@
 			base = base.substr(0,base.indexOf("#"));
 		}
 		return base + cUrl.substring(0, cUrl.length);
+	}
+	function setCheckBoxes() {
+		var tn = getUrlParameter('now');
+		var log = getUrlParameter('log');
+		if ( log !== undefined && log.length > 0 ) {
+			$("#log_opt").prop('checked', true);
+		}
+		if ( tn !== undefined && tn.length > 0 ) {
+			$("#when_opt").prop('checked', true);
+		}
 	}
 
 	function dump(obj) {
