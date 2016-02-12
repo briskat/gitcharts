@@ -32,21 +32,22 @@
 	var _blank = {textPosition : "none"};
 	var _gr = ["green","red"];
 	var _none = {trigger: 'none'};
+	var _mVal = {minValue: 0};
 	var Conf = {
 		'cact' : [
 			[
 				"/r/commits_mo",
 				[
-					[ 'Area', 'cact_d1', {_t: 'Commit activity',vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']],,, dateListener  ]
+					[ 'Area', 'cact_d1', {_t: 'Commit activity', vAxis: _mVal, isStacked: true }, [['month','regular','merge']],,, dateListener  ]
 				]
 			],
 			[
 				"/r/activity?d=%m",
 				[
-					[ 'Column', 'cact_d2', {_t: '%m commits', hAxis: _blank, isStacked: true}, [['date','regular','merge']],[1,2] ],
-					[ 'Area', 'cact_d3', {_t: '%m changed size', hAxis: _blank }, [['date','bytes']], [3] ],
-					[ 'Area', 'cact_d4', {_t: '%m lines', hAxis: _blank,colors: _gr }, [['date','added','deleted']], [4,5] ],
-					[ 'Area', 'cact_d5', {_t: '%m files', hAxis: _blank, colors:["green","red","#3366CC"] }, [['date','added','deleted','changed']],[6,7,8] ]
+					[ 'Column', 'cact_d2', {_t: '%m commits', hAxis: _blank, vAxis: _mVal, isStacked: true}, [['date','regular','merge']],[1,2] ],
+					[ 'Area', 'cact_d3', {_t: '%m changed size', hAxis: _blank, vAxis: _mVal }, [['date','bytes']], [3] ],
+					[ 'Area', 'cact_d4', {_t: '%m lines', hAxis: _blank, vAxis: _mVal,colors: _gr }, [['date','added','deleted']], [4,5] ],
+					[ 'Area', 'cact_d5', {_t: '%m files', hAxis: _blank, vAxis: _mVal, colors:["green","red","#3366CC"] }, [['date','added','deleted','changed']],[6,7,8] ]
 				]
 			]
 		],
@@ -54,8 +55,8 @@
 			[
 				"/r/commits_mo",
 				[
-					[ 'Area', 'csum_d7', {_t: 'Commit activity',vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']] ],
-					[ 'Area', 'csum_d8', {_t:'Total commit activity', vAxis: {minValue: 0}, isStacked: true }, [['month','regular','merge']],, run_sum ]
+					[ 'Area', 'csum_d7', {_t: 'Commit activity',vAxis: _mVal, isStacked: true }, [['month','regular','merge']] ],
+					[ 'Area', 'csum_d8', {_t:'Total commit activity', vAxis: _mVal, isStacked: true }, [['month','regular','merge']],, run_sum ]
 				]
 			],
 			[
@@ -67,7 +68,7 @@
 			[
 				"/r/commit_authors",
 				[
-					[ 'Area', 'conact_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
+					[ 'Area', 'conact_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"], vAxis: _mVal }, [['month','commits','contributors']],,, dateListener  ],
 				]
 			],
 			[
@@ -86,7 +87,7 @@
 							}
 							return {
 									hAxis: {title: 'lines added'},
-									vAxis: {title: 'lines removed'},
+									vAxis: {title: 'lines removed', minValue: 0},
 									title: month + tn + ' top commit contributors correlated with changed size and lines',
 									colors: fromRedToGren(min,max),
 									explorer: { maxZoomOut: 20 },
@@ -105,7 +106,7 @@
 			[
 				"/r/commit_authors",
 				[
-					[ 'Area', 'concom_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
+					[ 'Area', 'concom_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"], vAxis: _mVal }, [['month','commits','contributors']],,, dateListener  ],
 				]
 			],
 			[
@@ -133,13 +134,13 @@
 			[
 				"/r/commit_authors",
 				[
-					[ 'Area', 'conlin_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
+					[ 'Area', 'conlin_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"], vAxis: _mVal }, [['month','commits','contributors']],,, dateListener  ],
 				]
 			],
 			[
 				"/r/authors_lines?d=%m",
 				[
-					[ 'Column', 'conlin_d2', {_t: '%m top contributors by total no. of changed lines', colors:_gr },
+					[ 'Column', 'conlin_d2', {_t: '%m top contributors by total no. of changed lines', colors:_gr, vAxis: _mVal },
 						[['Contributor','lines added','lines deleted']],,
 						function (mydata) { mydata.sort(order_2valsum); return chop(mydata,8) },
 						authorListener
@@ -151,13 +152,13 @@
 			[
 				"/r/commit_authors",
 				[
-					[ 'Area', 'conaut_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"] }, [['month','commits','contributors']],,, dateListener  ],
+					[ 'Area', 'conaut_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"], vAxis: _mVal }, [['month','commits','contributors']],,, dateListener  ],
 				]
 			],
 			[
 				"/r/authors_size?d=%m",
 				[
-					[ 'Column', 'conaut_d2', {_t: '%m top contributors by size changed' },
+					[ 'Column', 'conaut_d2', {_t: '%m top contributors by size changed', vAxis: _mVal },
 						[['contributor','bytes']],,
 						function (mydata) { mydata.sort(order_abs); return chop(mydata,12) },
 						authorListener
@@ -169,7 +170,7 @@
 			[
 				"/r/newcomers_mo",
 				[
-					[ 'Area', 'connew_d1', {_t: 'Contributors and newcomers', colors: ["purple","sienna"]}, [['Date','contributors','newcomers']],,, dateListener ]
+					[ 'Area', 'connew_d1', {_t: 'Contributors and newcomers', vAxis: _mVal, colors: ["purple","sienna"]}, [['Date','contributors','newcomers']],,, dateListener ]
 				]
 			],
 			[
@@ -187,20 +188,20 @@
 			[
 				"/r/lines_mo",
 				[
-					[ 'Area', 'lact_d1', {_t: 'Line additions, removals', colors:_gr, vAxis: {minValue: 0}}, [['Date','lines added', 'lines deleted']],,, dateListener ]
+					[ 'Area', 'lact_d1', {_t: 'Line additions, removals', colors:_gr, vAxis: _mVal }, [['Date','lines added', 'lines deleted']],,, dateListener ]
 				]
 			],
 			[
 				"/r/lines_date?d=%m",
 				[
-					[ 'Column', 'lact_d2', {_t: '%m line additions, removals', colors:_gr, hAxis: _blank}, [['Date','lines added', 'lines deleted']],,, dateListener ],
+					[ 'Column', 'lact_d2', {_t: '%m line additions, removals', colors:_gr, hAxis: _blank, vAxis: _mVal}, [['Date','lines added', 'lines deleted']],,, dateListener ],
 				]
 			],
 			[
 				"/r/lines_commit?d=%d",
 				[
 					[ 'Column', 'lact_d3',
-						{_t : '%d top commits by total changed lines', colors:_gr, hAxis: _blank, 'tooltip' : _none },
+						{_t : '%d top commits by total changed lines', colors:_gr, hAxis: _blank, 'tooltip' : _none, vAxis: _mVal },
 						[['commit','lines added', 'lines deleted']],
 						,
 						function (mydata) { mydata.sort(order_2valsum); return stringify(chop(mydata,12)) },
@@ -213,21 +214,21 @@
 			[
 				"/r/files_added_mo",
 				[
-					[ 'Area', 'fact_d1', {_t:'File addition activity', colors:_gr}, [['Date','files added','files deleted']],,, dateListener1 ],
-					[ 'Area', 'fact_d2', {_t:'Total files'}, [['Date','total files']],, run_sum_files, dateListener ]
+					[ 'Area', 'fact_d1', {_t:'File addition activity', colors:_gr, vAxis: _mVal}, [['Date','files added','files deleted']],,, dateListener1 ],
+					[ 'Area', 'fact_d2', {_t:'Total files', vAxis: _mVal}, [['Date','total files']],, run_sum_files, dateListener ]
 				]
 			],
 			[
 				"/r/files_added_date?d=%m",
 				[
-					[ 'Column', 'fact_d3', {_t: '%m file additions, removals', colors:_gr, hAxis: _blank }, [['Date','added files','deleted files']],,, dateListener ],
+					[ 'Column', 'fact_d3', {_t: '%m file additions, removals', colors:_gr, hAxis: _blank, vAxis: _mVal }, [['Date','added files','deleted files']],,, dateListener ],
 				]
 			],
 			[
 				"/r/files_added_commit?d=%d",
 				[
 					[ 'Column', 'fact_d4',
-						{_t : '%d top commits by file additions', colors:_gr, hAxis: _blank, 'tooltip' : _none },
+						{_t : '%d top commits by file additions & removals', colors:_gr, hAxis: _blank, vAxis: _mVal, 'tooltip' : _none },
 						[['commit','added files','deleted files']],
 						,
 						function (mydata) { mydata.sort(order_2valsum); return stringify(chop(mydata,12)) },
@@ -240,20 +241,20 @@
 			[
 				"/r/files_changed_mo",
 				[
-					[ 'Area', 'fmodcom_d1', {_t: 'Changed files', vAxis: {minValue: 0}}, [['Date','changed files']],,, dateListener ]
+					[ 'Area', 'fmodcom_d1', {_t: 'Changed files', vAxis: _mVal}, [['Date','changed files']],,, dateListener ]
 				]
 			],
 			[
 				"/r/files_changed_date?d=%m",
 				[
-					[ 'Area', 'fmodcom_d2', {_t: '%m changed files', hAxis: _blank}, [['Date','changed files']],,, dateListener ],
+					[ 'Area', 'fmodcom_d2', {_t: '%m changed files', hAxis: _blank, vAxis: _mVal}, [['Date','changed files']],,, dateListener ],
 				]
 			],
 			[
 				"/r/files_changed_commit?d=%d",
 				[
 					[ 'Column', 'fmodcom_d3',
-						{_t : '%d top commits by changed files', hAxis: _blank, 'tooltip' : _none },
+						{_t : '%d top commits by changed files', hAxis: _blank, vAxis: _mVal, 'tooltip' : _none },
 						[['commit','changed files']],
 						,
 						function (mydata) { mydata.sort(order_abs); return stringify(chop(mydata,12)) },
@@ -266,20 +267,20 @@
 			[
 				"/r/files_changed_mo",
 				[
-					[ 'Area', 'fmodfil_d1', {_t: 'Changed files', vAxis: {minValue: 0}}, [['Date','changed files']],,, dateListener ]
+					[ 'Area', 'fmodfil_d1', {_t: 'Changed files', vAxis: _mVal}, [['Date','changed files']],,, dateListener ]
 				]
 			],
 			[
 				"/r/files_changed_date?d=%m",
 				[
-					[ 'Area', 'fmodfil_d2', {_t: '%m changed files', hAxis: _blank}, [['Date','changed files']],,, dateListener ],
+					[ 'Area', 'fmodfil_d2', {_t: '%m changed files', hAxis: _blank, vAxis: _mVal}, [['Date','changed files']],,, dateListener ],
 				]
 			],
 			[
 				"/r/files_changed?d=%d",
 				[
 					[ 'Column', 'fmodfil_d3',
-						{_t : '%d frequently changed files', hAxis: _blank, 'tooltip' : _none },
+						{_t : '%d frequently changed files', hAxis: _blank, vAxis: _mVal, 'tooltip' : _none },
 						[['file name','no. of changes']],
 						,
 						function (mydata) { mydata.sort(order_abs); return stringify(chop(mydata,12)) }, fileListener
@@ -291,21 +292,21 @@
 			[
 				"/r/size_mo",
 				[
-					[ 'Area', 'sact_d1', {_t:'Changed size'}, [['Date','bytes']],,, dateListener1 ],
-					[ 'Area', 'sact_d2', {_t:'Total size'}, [['Date','bytes']],, run_sum, dateListener ]
+					[ 'Area', 'sact_d1', {_t:'Changed size', vAxis : _mVal}, [['Date','bytes']],,, dateListener1 ],
+					[ 'Area', 'sact_d2', {_t:'Total size', vAxis: _mVal}, [['Date','bytes']],, run_sum, dateListener ]
 				]
 			],
 			[
 				"/r/size_date?d=%m",
 				[
-					[ 'Area', 'sact_d3', {_t: 'Changed size, %m', hAxis: _blank}, [['Date','bytes']],,, dateListener ],
+					[ 'Area', 'sact_d3', {_t: 'Changed size, %m', hAxis: _blank, vAxis : _mVal }, [['Date','bytes']],,, dateListener ],
 				]
 			],
 			[
 				"/r/size_commit?d=%d",
 				[
 					[ 'Column' , 'sact_d4',
-						{_t : '%d top commits by bytes changed', hAxis: _blank, 'tooltip' : _none },
+						{_t : '%d top commits by bytes changed', hAxis: _blank, vAxis : _mVal, 'tooltip' : _none },
 						[['Commit','bytes']],
 						,
 						function (mydata) { mydata.sort(order_abs); return stringify(chop(mydata,12)) },
@@ -318,7 +319,7 @@
 			[
 				"/r/size_yr_ft",
 				[
-					[ 'Area', 'stype_d1', {_t: 'Size in bytes by file type', isStacked : true, _stack: 1 },,,run_sum ]
+					[ 'Area', 'stype_d1', {_t: 'Size in bytes by file type', isStacked : true, vAxis: _mVal, _stack: 1 },,,run_sum ]
 				]
 			],
 			[
