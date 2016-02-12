@@ -33,12 +33,13 @@
 	var _gr = ["green","red"];
 	var _none = {trigger: 'none'};
 	var _mVal = {minValue: 0};
+    var _slant = {slantedText:true, slantedTextAngle:11}
 	var Conf = {
 		'cact' : [
 			[
 				"/r/commits_mo",
 				[
-					[ 'Area', 'cact_d1', {_t: 'Commit activity', vAxis: _mVal, isStacked: true }, [['month','regular','merge']],,, dateListener  ]
+					[ 'Area', 'cact_d1', {_t: 'Commit activity', vAxis: _mVal, hAxis: _slant, isStacked: true }, [['month','regular','merge']],,, dateListener  ]
 				]
 			],
 			[
@@ -55,8 +56,8 @@
 			[
 				"/r/commits_mo",
 				[
-					[ 'Area', 'csum_d7', {_t: 'Commit activity',vAxis: _mVal, isStacked: true }, [['month','regular','merge']] ],
-					[ 'Area', 'csum_d8', {_t:'Total commit activity', vAxis: _mVal, isStacked: true }, [['month','regular','merge']],, run_sum ]
+					[ 'Area', 'csum_d7', {_t: 'Commit activity',vAxis: _mVal, hAxis: _slant, isStacked: true }, [['month','regular','merge']] ],
+					[ 'Area', 'csum_d8', {_t:'Total commit activity', vAxis: _mVal, hAxis: _slant, isStacked: true }, [['month','regular','merge']],, run_sum ]
 				]
 			],
 			[
@@ -68,7 +69,7 @@
 			[
 				"/r/commit_authors",
 				[
-					[ 'Area', 'conact_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"], vAxis: _mVal }, [['month','commits','contributors']],,, dateListener  ],
+					[ 'Area', 'conact_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"], vAxis: _mVal, hAxis: _slant }, [['month','commits','contributors']],,, dateListener  ],
 				]
 			],
 			[
@@ -106,7 +107,7 @@
 			[
 				"/r/commit_authors",
 				[
-					[ 'Area', 'concom_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"], vAxis: _mVal }, [['month','commits','contributors']],,, dateListener  ],
+					[ 'Area', 'concom_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"], vAxis: _mVal, hAxis: _slant }, [['month','commits','contributors']],,, dateListener  ],
 				]
 			],
 			[
@@ -134,7 +135,7 @@
 			[
 				"/r/commit_authors",
 				[
-					[ 'Area', 'conlin_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"], vAxis: _mVal }, [['month','commits','contributors']],,, dateListener  ],
+					[ 'Area', 'conlin_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"], vAxis: _mVal, hAxis: _slant }, [['month','commits','contributors']],,, dateListener  ],
 				]
 			],
 			[
@@ -152,7 +153,7 @@
 			[
 				"/r/commit_authors",
 				[
-					[ 'Area', 'conaut_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"], vAxis: _mVal }, [['month','commits','contributors']],,, dateListener  ],
+					[ 'Area', 'conaut_d1', {_t:'Commit & contributor activity',colors: ["#3366CC","purple"], vAxis: _mVal, hAxis: _slant }, [['month','commits','contributors']],,, dateListener  ],
 				]
 			],
 			[
@@ -170,7 +171,7 @@
 			[
 				"/r/newcomers_mo",
 				[
-					[ 'Area', 'connew_d1', {_t: 'Contributors and newcomers', vAxis: _mVal, colors: ["purple","sienna"]}, [['Date','contributors','newcomers']],,, dateListener ]
+					[ 'Area', 'connew_d1', {_t: 'Contributors and newcomers', vAxis: _mVal, colors: ["purple","sienna"], hAxis: _slant }, [['Date','contributors','newcomers']],,, dateListener ]
 				]
 			],
 			[
@@ -188,7 +189,7 @@
 			[
 				"/r/lines_mo",
 				[
-					[ 'Area', 'lact_d1', {_t: 'Line additions, removals', colors:_gr, vAxis: _mVal }, [['Date','lines added', 'lines deleted']],,, dateListener ]
+					[ 'Area', 'lact_d1', {_t: 'Line additions, removals', colors:_gr, vAxis: _mVal, hAxis: _slant }, [['Date','lines added', 'lines deleted']],,, dateListener ]
 				]
 			],
 			[
@@ -214,8 +215,8 @@
 			[
 				"/r/files_added_mo",
 				[
-					[ 'Area', 'fact_d1', {_t:'File addition activity', colors:_gr, vAxis: _mVal}, [['Date','files added','files deleted']],,, dateListener1 ],
-					[ 'Area', 'fact_d2', {_t:'Total files', vAxis: _mVal}, [['Date','total files']],, run_sum_files, dateListener ]
+					[ 'Area', 'fact_d1', {_t:'File addition activity', colors:_gr, vAxis: _mVal, hAxis: _slant}, [['Date','files added','files deleted']],,, dateListener1 ],
+					[ 'Area', 'fact_d2', {_t:'Total files', vAxis: _mVal, hAxis: _slant}, [['Date','total files']],, run_sum_files, dateListener ]
 				]
 			],
 			[
@@ -241,7 +242,7 @@
 			[
 				"/r/files_changed_mo",
 				[
-					[ 'Area', 'fmodcom_d1', {_t: 'Changed files', vAxis: _mVal}, [['Date','changed files']],,, dateListener ]
+					[ 'Area', 'fmodcom_d1', {_t: 'Changed files', vAxis: _mVal, hAxis: _slant}, [['Date','changed files']],,, dateListener ]
 				]
 			],
 			[
@@ -267,7 +268,7 @@
 			[
 				"/r/files_changed_mo",
 				[
-					[ 'Area', 'fmodfil_d1', {_t: 'Changed files', vAxis: _mVal}, [['Date','changed files']],,, dateListener ]
+					[ 'Area', 'fmodfil_d1', {_t: 'Changed files', vAxis: _mVal, hAxis: _slant}, [['Date','changed files']],,, dateListener ]
 				]
 			],
 			[
@@ -292,8 +293,8 @@
 			[
 				"/r/size_mo",
 				[
-					[ 'Area', 'sact_d1', {_t:'Changed size', vAxis : _mVal}, [['Date','bytes']],,, dateListener1 ],
-					[ 'Area', 'sact_d2', {_t:'Total size', vAxis: _mVal}, [['Date','bytes']],, run_sum, dateListener ]
+					[ 'Area', 'sact_d1', {_t:'Changed size', vAxis : _mVal, hAxis: _slant}, [['Date','bytes']],,, dateListener1 ],
+					[ 'Area', 'sact_d2', {_t:'Total size', vAxis: _mVal, hAxis: _slant}, [['Date','bytes']],, run_sum, dateListener ]
 				]
 			],
 			[
@@ -319,7 +320,7 @@
 			[
 				"/r/size_yr_ft",
 				[
-					[ 'Area', 'stype_d1', {_t: 'Size in bytes by file type', isStacked : true, vAxis: _mVal, _stack: 1 },,,run_sum ]
+					[ 'Area', 'stype_d1', {_t: 'Size in bytes by file type', isStacked : true, vAxis: _mVal, hAxis: _slant, _stack: 1 },,,run_sum ]
 				]
 			],
 			[
