@@ -953,7 +953,7 @@
 
 	function getProjectGurl(Proj,path) {
 		var url=Proj.split('\\');
-		return 'github.com/' + path + url[1] + '/' + url[0];
+		return 'github.com/' + path + url[url.length-1] + '/' + url[0];
 	}
 
 	function refresh(term,skipTo) {
