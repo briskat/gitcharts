@@ -215,8 +215,7 @@
 			[
 				"/r/files_added_mo",
 				[
-					[ 'Area', 'fact_d1', {_t:'File addition activity', colors:_gr, vAxis: _mVal, hAxis: _slant}, [['Date','files added','files deleted']],,, dateListener1 ],
-					[ 'Area', 'fact_d2', {_t:'Total files', vAxis: _mVal, hAxis: _slant}, [['Date','total files']],, run_sum_files, dateListener ]
+					[ 'Area', 'fact_d1', {_t:'File addition activity', colors:_gr, vAxis: _mVal, hAxis: _slant}, [['Date','files added','files deleted']],,, dateListener ]
 				]
 			],
 			[
@@ -293,8 +292,7 @@
 			[
 				"/r/size_mo",
 				[
-					[ 'Area', 'sact_d1', {_t:'Changed size', vAxis : _mVal, hAxis: _slant}, [['Date','bytes']],,, dateListener1 ],
-					[ 'Area', 'sact_d2', {_t:'Total size', vAxis: _mVal, hAxis: _slant}, [['Date','bytes']],, run_sum, dateListener ]
+					[ 'Area', 'sact_d1', {_t:'Changed size', vAxis : _mVal, hAxis: _slant}, [['Date','bytes']],,, dateListener ]
 				]
 			],
 			[
@@ -577,18 +575,6 @@
 			return body;
 		}
 	}
-	function run_sum_files(body) {
-		if (body.length > 0) {
-			var newbody = new Array();
-			body[0]=[body[0][0], body[0][1]-body[0][2]];
-			for (i = 1; i < body.length; i++) {
-				body[i]=[body[i][0], body[i-1][1]+body[i][1]-body[i][2]];
-			}
-			return body;
-		} else {
-			return body;
-		}
-	}
 	function emptyData (header) {
 		var data =[['']];
 		for (i = 1; i < header[0].length; i++) {
@@ -839,9 +825,6 @@
 			}
 		}
 		google.visualization.events.addListener(chart, 'select', selectHandler);
-	}
-	function dateListener1(c,t,pos) {
-		dateListener(c,t,pos+1);
 	}
 	function commitPopUp(proj,table,selectedItem,val,value) {
 		getInfo(proj,'/commits/',value);
@@ -1189,11 +1172,8 @@ hr {
 		</div>
 
 		<div id="fact" class="tab-pane">
-			<div class="col-lg-7 bborder">
+			<div class="col-lg-12 bborder">
 				<div id="fact_d1" class="vh30"></div>
-			</div>
-			<div class="col-lg-5 bborder">
-				<div id="fact_d2" class="vh30"></div>
 			</div>
 			<div class="col-lg-7 bborder">
 				<div id="fact_d3" class="vh50"></div>
@@ -1222,11 +1202,8 @@ hr {
 		</div>
 
 		<div id="sact" class="tab-pane">
-			<div class="col-lg-7 bborder">
+			<div class="col-lg-12 bborder">
 				<div id="sact_d1" class="vh30"></div>
-			</div>
-			<div class="col-lg-5 bborder">
-				<div id="sact_d2" class="vh30"></div>
 			</div>
 			<div class="col-lg-7 bborder">
 				<div id="sact_d3" class="vh50"></div>
