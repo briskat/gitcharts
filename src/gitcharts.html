@@ -406,7 +406,7 @@
 			});
 		});
 		refresh(S['term']);
-	//	jQuery(document).ready(function(e) { jQuery('#help_btn').trigger('click'); });
+		jQuery(document).ready(function(e) { $('#intro').modal('show'); });
 	}
 
 	function getCurUrl() {
@@ -1040,7 +1040,7 @@ hr {
 			<span class="glyphicon glyphicon-link" aria-hidden="true"></span>
 			</a>
 			</li>
-			<li><a id="help_btn" href="http://www.briskat.com/gitcharts.html" title="Tutorial">
+			<li><a href="http://www.briskat.com/gitcharts.html" title="Tutorial">
 			<span class="glyphicon glyphicon-question-sign text-success" aria-hidden="true" style="font-size: 125%"></span>
 			</a>
 			</li>
@@ -1049,6 +1049,27 @@ hr {
 	</div>
 </div>
 	<div class="tab-content">
+		<div id="intro" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+		  <div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header text-center">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h2 class="modal-title">Gitcharts<br/><small>is an interactive analytic service for git repositories.</small></h2>
+				</div>
+				<div class="modal-body">
+					<div class="text-left">
+						Tip:<ol><li>Select <kbd>lines</kbd> in a top menu.</li><li>Select "2016-01" in the first graph (by clicking on a green/red line).</li><li>Click on the first green bar in <i>"2016-01 top commits by total changed lines"</i> report (the last report).</li></ol><br/>
+					</div>
+					<div class="text-center">
+					<p><a class="btn btn-lg btn-success" href="http://www.briskat.com/gitcharts.html" target="_blank">Other tips</a></p>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		  </div>
+		</div>
 		<div id="com_dialog" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
 		  <div class="modal-dialog modal-lg">
 			<div class="modal-content">
